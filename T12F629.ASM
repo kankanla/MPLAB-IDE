@@ -42,7 +42,7 @@
 		LB					;
 		LC					;		
 		LD					;
-		ENDC
+		ENDC					;
 
 ;----------
 		ORG		H'0'			;
@@ -55,7 +55,7 @@ INIT
 		MOVWF		TRISIO			;
 		CLRF		ANSEL			;
 
-		BCF		STATUS,RP0
+		BCF		STATUS,RP0		;
 		MOVLW		B'00000111'		;
 		MOVWF		CMCON			;
 		BCF		INTCON,PEIE		;
@@ -152,7 +152,7 @@ L_ROTATION
 		MOVWF		MOTER_PWR_TEMP		;
 		CALL		M_PWR			;
 		MOVF		L_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
+		MOVWF		PWR_OFF_TEMP		;
 		CALL		CLRGPIO			;
 
 		
