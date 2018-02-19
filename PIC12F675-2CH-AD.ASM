@@ -5,66 +5,67 @@ AN2に入力した電圧はAN3に設定した電圧より高く場合、LEDが
 
   LIST   P=12F675
   INCLUDE  P12F675.INC
-  CB = _CPD_OFF     ;データ保護しない
-  CB &= _CP_OFF     ;コード保護しない
-  CB &= _BODEN_ON     ;ブラウンアウトリセット
-  CB &= _MCLRE_OFF    ;GP3/MCLR デジタルI/O
-  CB &= _PWRTE_ON     ;パワーアップタイマを使用する
-  CB &= _WDT_OFF     ;ウォッチドッグタイマをOFF
-  CB &= _INTRC_OSC_NOCLKOUT  ;内部クロックを利用、RA4ピンI/Oピン
-  __CONFIG CB      ;設定
+  CB = _CPD_OFF               ;データ保護しない
+  CB &= _CP_OFF               ;コード保護しない
+  CB &= _BODEN_ON             ;ブラウンアウトリセット
+  CB &= _MCLRE_OFF            ;GP3/MCLR デジタルI/O
+  CB &= _PWRTE_ON             ;パワーアップタイマを使用する
+  CB &= _WDT_OFF              ;ウォッチドッグタイマをOFF
+  CB &= _INTRC_OSC_NOCLKOUT   ;内部クロックを利用、RA4ピンI/Oピン
+  __CONFIG CB                 ;設定
 
-;--
+;--------
   CBLOCK H'20'
-   CONT1      ;LED点滅カウント
-   SCONT1      ;タイマカウント
+   CONT1                      ;LED点滅カウント
+   SCONT1                     ;タイマカウント
    SCONT2
    HAN3
    LAN3
    HAN2
    LAN2
-   EEA       ;EEPROM書き込み時のアドレス
-   EED       ;EEPROM書き込み時のデータ
+   EEA                        ;EEPROM書き込み時のアドレス
+   EED                        ;EEPROM書き込み時のデータ
   ENDC
 
-;--
+;----------
   ORG  H'0'
   GOTO INIT
+
   ;ORG  H'04'
   ;GOTO H04
 
-;--
-INIT          ;デバイス初期化
-  BCF  STATUS,RP0    ;0バンク選択
-  MOVLW B'00000111'    ;コンパレータOFF
-  MOVWF CMCON     ;コンパレータOFF
-  BCF  INTCON,PEIE    ;周辺割り込みOFF
+;----------
+INIT                          ;デバイス初期化
+  BCF  STATUS,RP0             ;0バンク選択
+  MOVLW B'00000111'           ;コンパレータOFF
+  MOVWF CMCON                 ;コンパレータOFF
+  BCF  INTCON,PEIE            ;周辺割り込みOFF
 
-  BSF  STATUS,RP0    ;1バンク選択
-  CALL 0x3FF     ;
+  BSF  STATUS,RP0            ;1バンク選択
+  CALL 0x3FF                 ;
   MOVWF OSCCAL
-  MOVLW B'00010110'    ;RP1,2,4入力用設定
-  MOVWF TRISIO     ;RP1,2,4入力用設定
-  MOVLW B'00010100'    ;Fosc/8,GP2,4アナログ
-  MOVWF ANSEL     ;Fosc/8,GP2,4アナログ
-  BCF  STATUS,RP0    ;0バンク戻る
+  MOVLW B'00010110'         ;RP1,2,4入力用設定
+  MOVWF TRISIO              ;RP1,2,4入力用設定
+  MOVLW B'00010100'         ;Fosc/8,GP2,4アナログ
+  MOVWF ANSEL               ;Fosc/8,GP2,4アナログ
+  BCF  STATUS,RP0           ;0バンク戻る
   CALL S1TIME
 
 ;-----------------------------------------------------------
-MAIN          ;
-  BTFSC GPIO,1
-  GOTO ADCL
+MAIN                        ;
+  BTFSC GPIO,1              ;
+  GOTO ADCL                 ;
 
 ;ADH---------------------------
-  MOVLW B'00001100'    ;ADFM=0,VDD電圧,AN3-GP4
-  MOVWF ADCON0     ;
-  CALL ADCMAIN
-  MOVF ADRESH,W
-  MOVWF HAN3      ;
-  BSF  STATUS,RP0
-  MOVF ADRESL,W
-  BCF  STATUS,RP0
-  MOVWF LAN3      ;
+  MOVLW B'00001100'         ;ADFM=0,VDD電圧,AN3-GP4
+  MOVWF ADCON0              ;
+  CALL ADCMAIN              ;
+  MOVF ADRESH,W             ;
+  MOVWF HAN3                ;
+  BSF  STATUS,RP0           ;
+  MOVF ADRESL,W             ;
+  BCF  STATUS,RP0           ;
+  MOVWF LAN3                ;
 
   MOVLW B'00001000'    ;ADFM=0,VDD電圧,AN2-GP2
   MOVWF ADCON0
