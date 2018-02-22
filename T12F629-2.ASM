@@ -31,6 +31,7 @@
 		MOTER_PWR_TEMP	;
 		R_PWR_OFF		;R_PWR_OFF	
 		L_PWR_OFF		;L_PWR_OFF
+		FSR_TEMP		;
 		PWR_OFF_TEMP	;
 		STEP_CNT		;
 		MOTOR_STEP		;
@@ -59,42 +60,32 @@ INIT
 		MOVWF		CMCON			;
 		BCF			INTCON,PEIE		;
 		
-		MOVLW		B'00010001'		;波形ドライブ
-	;	MOVLW		B'00000001'		;フルステップ
-		MOVWF		LA;				;
-		MOVLW		B'00000011'		;波形ドライブ
-	;	MOVLW		B'00000010'		;フルステップ
-		MOVWF		LB				;
-		MOVLW		B'00000110'		;波形ドライブ
-	;	MOVLW		B'00000100'		;フルステップ
-		MOVWF		LC				;
-		MOVLW		B'00010100'		;波形ドライブ
-	;	MOVLW		B'00010000'		;フルステップ
-		MOVWF		LD				;
+		CALL		DRV1			;波形ドライブ
+		;CALL		DRV2			;フルステップ
 		
 		MOVLW		D'13'			;
 		MOVWF		MOTER_PWR		;通電時間
 		
-		MOVLW		D'45'			; 90x4=360 利用のモーターの１回転ステップ数を割る4;
+		MOVLW		D'90'			; 90x4=360 利用のモーターの１回転ステップ数を割る4;
 		MOVWF		MOTOR_STEP		;
 		
-		MOVLW		D'90'			;右回転SPEED
+		MOVLW		D'60'			;右回転SPEED
 		MOVWF		R_PWR_OFF			;
 		
-		MOVLW		D'90'			;左回転SPEED
+		MOVLW		D'60'			;左回転SPEED
 		MOVWF		L_PWR_OFF			;
 		
-		MOVLW		D'9';			;回転数
+		MOVLW		D'1';			;回転数
 		MOVWF		STEP_CNT		;
 		
-
 ;--------Main
 MAIN
-	;	CALL 		R				;
+		CALL 		R				;
+		CALL		TIMER3			;
 		CALL 		L				;
 		DECFSZ		STEP_CNT,1		;
 		GOTO 		MAIN			;
-				
+
 		GOTO 		EEND			;
 		
 ;--------end
@@ -123,92 +114,72 @@ L_LOOP
 		GOTO		L_LOOP			;
 		RETURN
 
-;--------StepA
+;--------
 L_ROTATION
-		MOVF		LA,0			;
-		MOVWF		GPIO			;
+		MOVLW		LA				;LAのアドレスを読み取り
+		MOVWF		FSR				;FSRにアドレスと書き込み
+L_INDF_LOOP
+		MOVF		INDF,0			;INDFレジスタを読み取り
+		MOVWF		GPIO			;回転データを出力
+		MOVWF		FSR_TEMP		;
 		MOVF		MOTER_PWR,0		;
 		MOVWF		MOTER_PWR_TEMP	;
 		CALL		M_PWR			;
 		MOVF		L_PWR_OFF,0		;
 		MOVWF		PWR_OFF_TEMP	;
 		CALL		CLRGPIO			;
-		
-		MOVF		LB,0			;
-		MOVWF		GPIO			;
-		MOVF		MOTER_PWR,0		;
-		MOVWF		MOTER_PWR_TEMP	;
-		CALL		M_PWR			;
-		MOVF		L_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
-		CALL		CLRGPIO			;
-		
-		MOVF		LC,0			;
-		MOVWF		GPIO			;
-		MOVF		MOTER_PWR,0		;
-		MOVWF		MOTER_PWR_TEMP	;
-		CALL		M_PWR			;
-		MOVF		L_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
-		CALL		CLRGPIO			;
-		
-		MOVF		LD,0			;
-		MOVWF		GPIO			;
-		MOVF		MOTER_PWR,0		;
-		MOVWF		MOTER_PWR_TEMP	;
-		CALL		M_PWR			;
-		MOVF		L_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
-		CALL		CLRGPIO			;
+		MOVF		FSR_TEMP,0		;
+		SUBWF		LD,0			;
+		BTFSC		STATUS,Z		;
 		RETURN
+		
+		INCF		FSR,1			;
+		GOTO		L_INDF_LOOP		;
 
-;--------StepB
+;--------			
 R_ROTATION
-		MOVF		LD,0			;
+		MOVLW		LD				;
+		MOVWF		FSR				;
+R_INDF_LOOP
+		MOVF		INDF,0			;
 		MOVWF		GPIO			;
+		MOVWF		FSR_TEMP		;
 		MOVF		MOTER_PWR,0		;
 		MOVWF		MOTER_PWR_TEMP	;
 		CALL		M_PWR			;
 		MOVF		R_PWR_OFF,0		;
 		MOVWF		PWR_OFF_TEMP	;
 		CALL		CLRGPIO			;
-		
-		MOVF		LC,0			;
-		MOVWF		GPIO			;
-		MOVF		MOTER_PWR,0		;
-		MOVWF		MOTER_PWR_TEMP	;
-		CALL		M_PWR			;
-		MOVF		R_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
-		CALL		CLRGPIO			;
-		
-		MOVF		LB,0			;
-		MOVWF		GPIO			;
-		MOVF		MOTER_PWR,0		;
-		MOVWF		MOTER_PWR_TEMP	;
-		CALL		M_PWR			;
-		MOVF		R_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
-		CALL		CLRGPIO			;
-		
-		MOVF		LA,0			;
-		MOVWF		GPIO			;
-		MOVF		MOTER_PWR,0		;
-		MOVWF		MOTER_PWR_TEMP	;
-		CALL		M_PWR			;
-		MOVF		R_PWR_OFF,0		;
-		MOVWF		PWR_OFF_TEMP	;
-		CALL		CLRGPIO			;
+		MOVF		FSR_TEMP,0		;
+		SUBWF		LA,0			;
+		BTFSC		STATUS,Z		;
 		RETURN
+		
+		DECF		FSR,1			;
+		GOTO		R_INDF_LOOP		;
 
-
-
-;--------Timer
-TIMER1	MOVLW		D'25'			;0.1ミリ秒
-		MOVWF		CNT1
-LOOP1	NOP
-		DECFSZ		CNT1,1
-		GOTO		LOOP1
+;--------
+DRV1
+		MOVLW		B'00010001'		;波形ドライブ
+		MOVWF		LA;				;
+		MOVLW		B'00000011'		;波形ドライブ
+		MOVWF		LB				;
+		MOVLW		B'00000110'		;波形ドライブ
+		MOVWF		LC				;
+		MOVLW		B'00010100'		;波形ドライブ
+		MOVWF		LD				;
+		RETURN
+		
+;--------	
+DRV2
+		MOVLW		B'00000001'		;フルステップ
+		MOVWF		LA;				;
+		MOVLW		B'00000010'		;フルステップ
+		MOVWF		LB				;
+		MOVLW		B'00000100'		;フルステップ
+		MOVWF		LC				;
+		MOVLW		B'00010000'		;フルステップ
+		MOVWF		LD				;
 		RETURN
 
 ;--------
@@ -225,6 +196,14 @@ MLOOP1	NOP
 		CALL		TIMER1
 		DECFSZ		MOTER_PWR_TEMP,1	;
 		GOTO		MLOOP1
+		RETURN
+
+;--------Timer
+TIMER1	MOVLW		D'25'			;0.1ミリ秒
+		MOVWF		CNT1
+LOOP1	NOP
+		DECFSZ		CNT1,1
+		GOTO		LOOP1
 		RETURN
 
 TIMER2	MOVLW		D'100'			;D'100' -> 10ミリ秒 D'50' -> 5ミリ秒
