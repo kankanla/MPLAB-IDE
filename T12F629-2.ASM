@@ -21,6 +21,7 @@
 ;		CB		&=	_INTRC_OSC
 		CB		&=	_INTRC_OSC_NOCLKOUT
 		__CONFIG	CB
+		
 ;----------
 		CBLOCK	H'20'
 		CNT1			;TIME
@@ -50,72 +51,83 @@
 		
 ;----------
 INIT
-		BSF			STATUS,RP0		;
-		MOVLW		B'00101000'		;
-		MOVWF		TRISIO			;
-		CLRF		ANSEL			;
+		BSF			STATUS,RP0		;BANK1 選択
+		MOVLW		B'00101000'		;GIPO5,3入力端子
+		MOVWF		TRISIO			;GIPO5,3入力端子
+		CLRF		ANSEL			;アナログをクリア、デジタル入力
 
-		BCF			STATUS,RP0
-		MOVLW		B'00000111'		;
-		MOVWF		CMCON			;
-		BCF			INTCON,PEIE		;
+		BCF			STATUS,RP0		;BANK0 選択
+		MOVLW		B'00000111'		;比較OFF
+		MOVWF		CMCON			;比較OFF
+		BCF			INTCON,PEIE		;すべての外部割り込みを禁止
 		
-		CALL		DRV1			;波形ドライブ
+		;CALL		DRV1			;波形ドライブ
 		;CALL		DRV2			;フルステップ
+		CALL		DRV3			;フルステップ
 		
-		MOVLW		D'13'			;
-		MOVWF		MOTER_PWR		;通電時間
+		MOVLW		D'7'			;
+		MOVWF		MOTER_PWR		;モータ1ステップの通電時間
 		
-		MOVLW		D'90'			; 90x4=360 利用のモーターの１回転ステップ数を割る4;
+		MOVLW		D'90'			;4分の1, 90x4=360 利用のモーターの１回転ステップ数を割る4;
 		MOVWF		MOTOR_STEP		;
 		
-		MOVLW		D'60'			;右回転SPEED
-		MOVWF		R_PWR_OFF			;
+		MOVLW		D'7'			;右回転SPEED,POWER_OFF時間が長くなると遅くなります
+		MOVWF		R_PWR_OFF		;
 		
-		MOVLW		D'60'			;左回転SPEED
-		MOVWF		L_PWR_OFF			;
+		MOVLW		D'7'			;左回転SPEED,POWER_OFF時間が長くなると遅くなります
+		MOVWF		L_PWR_OFF		;
 		
-		MOVLW		D'1';			;回転数
+		MOVLW		D'1';			;通電後の回転回数
 		MOVWF		STEP_CNT		;
 		
 ;--------Main
-MAIN
-		CALL 		R				;
-		CALL		TIMER3			;
-		CALL 		L				;
-		DECFSZ		STEP_CNT,1		;
-		GOTO 		MAIN			;
+MAIN								;メイン
+		CALL 		R				;右回転
+		CALL		TIMER3			;遅延
+	;	CALL 		L				;左回転
+	;	CALL		TIMER3			;遅延
+		DECFSZ		STEP_CNT,1		;回転カウントを-1
+		GOTO 		MAIN			;0出なければMainへ
 
-		GOTO 		EEND			;
+		GOTO 		EEND			;0になった場合は終了
 		
 ;--------end
 EEND
-		MOVLW		B'00000000'		;
-		MOVWF		GPIO			;
+		MOVLW		B'00000000'		;すべての出力ボードをクリア
+		MOVWF		GPIO			;すべての出力ボードをクリア
+		NOP							;
+		BTFSC		GPIO,3			;GPIO,3の状態を確認、デフォルトは0
+		;CALL		R				;押された時、右回転を呼び出し
+		CALL 		L_ROTATION		;
+		NOP							;
+		BTFSC		GPIO,5			;GPIO,53の状態を確認、デフォルトは0
+		;CALL		L				;押された時、右回転を呼び出し
+		CALL		R_ROTATION		;
 		NOP							;
 		GOTO		EEND			;
 		
+		
 ;--------Main2
-R
+R									;右一周回転
 		MOVF		MOTOR_STEP,0	;
 		MOVWF		CNTNFA;			;
 R_LOOP
-		CALL		R_ROTATION		;
+		CALL		R_ROTATION		;右4ステップ
 		DECFSZ		CNTNFA,1		;
 		GOTO		R_LOOP			;
 		RETURN						;
 		
-L
+L									;左一周回転
 		MOVF		MOTOR_STEP,0	;
 		MOVWF		CNTNFB;			;
 L_LOOP
-		CALL		L_ROTATION		;
+		CALL		L_ROTATION		;左4ステップ
 		DECFSZ		CNTNFB,1		;
 		GOTO		L_LOOP			;
 		RETURN
 
 ;--------
-L_ROTATION
+L_ROTATION							;左4ステップ
 		MOVLW		LA				;LAのアドレスを読み取り
 		MOVWF		FSR				;FSRにアドレスと書き込み
 L_INDF_LOOP
@@ -137,7 +149,7 @@ L_INDF_LOOP
 		GOTO		L_INDF_LOOP		;
 
 ;--------			
-R_ROTATION
+R_ROTATION							;左4ステップ
 		MOVLW		LD				;
 		MOVWF		FSR				;
 R_INDF_LOOP
@@ -182,6 +194,17 @@ DRV2
 		MOVWF		LD				;
 		RETURN
 
+;--------
+DRV3	
+		MOVLW		B'00000011'		;;
+		MOVWF		LA;				;
+		MOVLW		B'00000110'		;;
+		MOVWF		LB				;
+		MOVLW		B'00010100'		;;
+		MOVWF		LC				;
+		MOVLW		B'00000000'		;;
+		MOVWF		LD				;
+		RETURN
 ;--------
 CLRGPIO	NOP
 		CLRF		GPIO			;
