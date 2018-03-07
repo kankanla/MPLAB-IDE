@@ -8,7 +8,7 @@
 		LIST		P=12F675
 		INCLUDE		P12F675.INC
 ;---------
-;	CONFIG 		設定
+;CONFIG 		設定
 		CB		=	_CPD_OFF
 		CB		&=	_CP_OFF
 		CB		&=	_BODEN_ON
@@ -19,29 +19,26 @@
 		__CONFIG	CB
 		
 ;----------
-		CBLOCK	H'20'		;EQU
-		SPEED			;SPEED
-		SPEED_TEMP		;SPEED_TEMP
+		CBLOCK	H'20'
 		STEP_ALL		;ALL_STEP
-		STEP_ALL_TEMP	;
 		STEP_ON			;STEP_ON
-		STEP_ON_TEMP	;
+		STEP_OFF		;		
+		STEP_ON_CONT	;
+		STEP_OFF_CONT	;
 		CNT1			;TIME
 		CNT2			;TIME
 		CNT3			;TIME
 		CNT4			;TIME
-		ENDC
+		ENDC			;
 
 ;----------
 		ORG			H'0'			;
 		GOTO		INIT			;
-		
 		ORG			H'04'			;
 		GOTO		H04				;
 		
 ;----------
-H04
-
+H04		
 		
 ;----------
 INIT
@@ -53,46 +50,74 @@ INIT
 		BCF			STATUS,RP0		;BANK0 選択
 		MOVLW		B'00000111'		;比較OFF
 		MOVWF		CMCON			;比較OFF
-		BCF			INTCON,PEIE		;すべての外部割り込みを禁止
+		BSF			INTCON,PEIE		;すべての外部割り込みを禁止
 		
 		MOVLW		D'30'			;
 		MOVWF		STEP_ALL		;
-		MOVLW		D'16'			;
+		MOVLW		D'1'			;
 		MOVWF		STEP_ON			;
-		
-		
+		MOVWF		STEP_ON_CONT	;
+		SUBWF		STEP_ALL,w		;
+		MOVWF		STEP_OFF		;
+		MOVWF		STEP_OFF_CONT	;
+
 ;--------Main
-MAIN								;メイン
-		MOVF		STEP_ALL,0		;
-		MOVWF		STEP_ALL_TEMP	;
-		MOVF		STEP_ON,0		;
-		MOVWF		STEP_ON_TEMP	;
-		
-		
-MAIN_T1
-		MOVLW		B'00000000'		;
-		NOP							;
+MAIN
+MAIN_ON
 		NOP
-		MOVF		STEP_ON_TEMP,1	;
-		BTFSS		STATUS,Z		;
-		DECFSZ		STEP_ON_TEMP,1	;
-		MOVLW		B'00000100'		;
-		BTFSS		STATUS,Z		;
-		MOVWF		GPIO			;
+		NOP
+		NOP
+		BSF			GPIO,2			;
+		CALL		TIMER2			;;;
+		BTFSC		GPIO,3			;
+		CALL		SET_STEP		;
+		DECFSZ		STEP_ON_CONT	;
+		GOTO		MAIN_ON			;
+		MOVF		STEP_ON,w		;
+		MOVWF		STEP_ON_CONT	;
+		GOTO		MAIN_OFF		;
+
+MAIN_OFF
+		MOVF		STEP_OFF,w		;
+		BTFSC		STATUS,Z		;
+		GOTO		MAIN_ON			;
+		BCF			GPIO,2			;
+		CALL		TIMER2			;;;
+		BTFSC		GPIO,3			;
+		CALL		SET_STEP		;
+		DECFSZ		STEP_OFF_CONT	;
+		GOTO		MAIN_OFF		;
+		MOVF		STEP_OFF,w		;
+		MOVWF		STEP_OFF_CONT	;
+		GOTO		MAIN_ON			;
+
+		
+;--------SET_STEP
+SET_STEP
+		BCF			GPIO,2			;
+		BTFSC		GPIO,3			;
+		GOTO		SET_STEP		;GPIO 1
+		
+		MOVF		STEP_ON,w		;現在のON値を読み取り
+		SUBWF		STEP_ALL,w		;全体のステップを減算します。
+		BTFSC		STATUS,Z		;結果は0の場合、ON==ALLの場合
+		CLRF		STEP_ON			;ONをクリアする
+		INCF		STEP_ON,f		;ONを+1
+		
+		MOVF		STEP_ON,w		;
+		SUBWF		STEP_ALL,w		;
+		MOVWF		STEP_OFF		;
+		
+		MOVF		STEP_ON,w		;
+		MOVWF		STEP_ON_CONT	;
+		MOVF		STEP_OFF,w		;
+		MOVWF		STEP_OFF_CONT	;
+		
+		BSF			GPIO,0			;
+		BSF			GPIO,1			;
 		CALL		TIMER2			;
-		
-		DECFSZ		STEP_ALL_TEMP,1	;
-		GOTO		MAIN_T1			;
-		GOTO		MAIN			;
-		
-		GOTO 		EEND			;
-		
-;-------TP_ON
-TP_ON	
-		DECF		STEP_ALL_TEMP	;
-		DECF		STEP_ON_TEMP	;
-		MOVLW		B'00000100'		;
-		MOVWF		GPIO			;
+		BCF			GPIO,0			;
+		BCF			GPIO,1			;
 		RETURN
 		
 ;--------end
@@ -101,12 +126,8 @@ EEND
 		MOVWF		GPIO			;すべての出力ボードをクリア
 		GOTO		EEND			;
 
-
-
-
-
 ;--------Timer
-TIMER1	MOVLW		D'25'			;0.1ミリ秒
+TIMER1	MOVLW		D'25'			;D'25' 0.1ミリ秒
 		MOVWF		CNT1
 LOOP1	NOP
 		DECFSZ		CNT1,1
