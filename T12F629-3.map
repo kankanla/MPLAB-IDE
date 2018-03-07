@@ -1,0 +1,64 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Thu Mar 08 02:41:08 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0000b8
+ .config_2007_T12F629-3.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x00005f      
+                            0x002007    0x002007      
+            94 out of 1158 program addresses used, program memory utilization is 8%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     EEND   0x000042    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                      H04   0x000005    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                     INIT   0x000005    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP1   0x000047    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP2   0x00004d    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP3   0x000054    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP4   0x00005b    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                     MAIN   0x000015    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                 MAIN_OFF   0x000021    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                  MAIN_ON   0x000015    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                 SET_STEP   0x00002d    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER1   0x000045    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER2   0x00004b    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER3   0x000052    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER4   0x000059    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                      H04   0x000005    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                     INIT   0x000005    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                     MAIN   0x000015    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                  MAIN_ON   0x000015    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                 MAIN_OFF   0x000021    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                 SET_STEP   0x00002d    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                     EEND   0x000042    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER1   0x000045    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP1   0x000047    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER2   0x00004b    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP2   0x00004d    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER3   0x000052    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP3   0x000054    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                   TIMER4   0x000059    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+                    LOOP4   0x00005b    program     static E:\Youtube-PIC\T0214\T12F629-3.ASM
+
+
