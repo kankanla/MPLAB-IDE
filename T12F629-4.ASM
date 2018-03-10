@@ -35,10 +35,10 @@
 		ENDC			;
 
 ;----------
-		ORG			0		;
+		ORG			0				;
 		GOTO		INIT			;
 		
-		ORG			4			;
+		ORG			4				;
 		GOTO		H04				;
 		
 ;----------
@@ -54,15 +54,12 @@ H04
 		CLRF		STEP_ON			;ON‚ðƒNƒŠƒA‚·‚é
 		MOVF		STEP_ON,w		;
 		BTFSC		STATUS,Z		;
-		SLEEP
-		
-		
-		
+		SLEEP						;
+
 		MOVF		STEP_ON,w		;
 		SUBWF		STEP_ALL,w		;
 		MOVWF		STEP_OFF		;
 
-			
 		MOVF		STEP_ON,w		;
 		MOVWF		STEP_ON_CONT	;
 		MOVWF		H04W_LED		;
@@ -74,9 +71,9 @@ H04
 		BCF			GPIO,0			;
 		MOVF		H04W_LED,w		;
 		BTFSC		STATUS,Z		;
-		GOTO		H4_EEND			;		
+		GOTO		H4_EEND			;
 
-H4_LED	
+H4_LED
 		BSF			GPIO,1			;
 		CALL		TIMER2			;
 		BCF			GPIO,1			;
@@ -86,11 +83,9 @@ H4_LED
 
 H4_EEND
 		BSF			INTCON,GIE		;
-		MOVF		H04W_TEMP,w		;		
-		
-
+		MOVF		H04W_TEMP,w		;
 		;-----------------------
-		RETFIE		;
+		RETFIE						;
 		
 		
 ;----------
@@ -109,7 +104,6 @@ INIT
 		BSF			INTCON,GIE		;PEIEFŠO?’†’fŽg”\ˆÊ
 		BSF			INTCON,INTE		;INTEFGP2/INT ŠO•”’†’fŽg”\ˆÊ
 
-		
 		MOVLW		D'11'			;
 		MOVWF		STEP_ALL		;
 		MOVLW		D'1'			;
@@ -125,7 +119,7 @@ MAIN
 T1_ON
 		DECFSZ		STEP_ON_CONT,f	;
 		GOTO		T1_ON			;
-		BCF			GPIO,0			;	
+		BCF			GPIO,0			;
 		MOVF		STEP_ON,w		;
 		MOVWF		STEP_ON_CONT	;
 		GOTO		T1_OFF			;
@@ -137,10 +131,6 @@ T1_OFF
 		MOVF		STEP_OFF,w		;
 		MOVWF		STEP_OFF_CONT	;
 		GOTO		T1_ON			;
-		
-
-
-
 
 
 ;--------T1;
@@ -167,7 +157,7 @@ MAIN_OFF
 		MOVWF		STEP_OFF_CONT	;
 		GOTO		MAIN_ON			;
 
-		
+
 ;--------SET_STEP
 SET_STEP
 	
@@ -191,7 +181,7 @@ SET_STEP
 		CALL		TIMER2			;
 		BCF			GPIO,0			;
 		BCF			GPIO,1			;
-		RETURN
+		RETURN						;
 		
 ;--------end
 EEND
@@ -205,44 +195,45 @@ EEND
 ;25kHz  1s/25000= 0.00004s = 0.04ms = 40us
 
 KHZ25_T	MOVLW		D'19'			;D'25' 0.1ƒ~ƒŠ•b
-		MOVWF		KHZ25
-KHZ25_LOOP
-		DECFSZ		KHZ25,1
-		GOTO		KHZ25_LOOP
-		RETURN
+		MOVWF		KHZ25			;
+KHZ25_LOOP							;
+		DECFSZ		KHZ25,1			;
+		GOTO		KHZ25_LOOP		;
+		RETURN						;
 
 
 ;--------Timer
 TIMER1	MOVLW		D'25'			;D'25' 0.1ƒ~ƒŠ•b
-		MOVWF		CNT1
-LOOP1	NOP
-		DECFSZ		CNT1,1
-		GOTO		LOOP1
-		RETURN
+		MOVWF		CNT1			;
+LOOP1	NOP							;
+		DECFSZ		CNT1,1			;
+		GOTO		LOOP1			;
+		RETURN						;
 
 TIMER2	MOVLW		D'100'			;D'100' -> 10ƒ~ƒŠ•b D'50' -> 5ƒ~ƒŠ•b
 		MOVWF		CNT2
-LOOP2	NOP
-		CALL		TIMER1
-		DECFSZ		CNT2,1
-		GOTO		LOOP2
-		RETURN
+LOOP2	NOP							;
+		CALL		TIMER1			;
+		DECFSZ		CNT2,1			;
+		GOTO		LOOP2			;
+		RETURN						;
 		
 TIMER3	MOVLW		D'50'			;1/2•b
-		MOVWF		CNT3
-LOOP3	NOP
-		CALL		TIMER2
-		DECFSZ		CNT3,1
-		GOTO		LOOP3
-		RETURN
+		MOVWF		CNT3			;
+LOOP3	NOP							;
+		CALL		TIMER2			;
+		DECFSZ		CNT3,1			;
+		GOTO		LOOP3			;
+		RETURN						;
 
 TIMER4	MOVLW		D'10'			;10•b
-		MOVWF		CNT4
-LOOP4	NOP
-		CALL		TIMER3
-		DECFSZ		CNT4,1
-		GOTO		LOOP4
-		RETURN
+		MOVWF		CNT4			;
+LOOP4	NOP							;
+		CALL		TIMER3			;
+		DECFSZ		CNT4,1			;
+		GOTO		LOOP4			;
+		RETURN						;
 
 ;--------
+E_END								;
 		END							;
