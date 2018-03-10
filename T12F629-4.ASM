@@ -27,6 +27,7 @@
 		STEP_OFF_CONT	;
 		KHZ25			;
 		H04W_TEMP		;
+		H04W_LED		;
 		CNT1			;TIME
 		CNT2			;TIME
 		CNT3			;TIME
@@ -46,6 +47,7 @@ H04
 		BCF			INTCON,GIE		;
 		BCF			INTCON,INTF		;	
 		;-----------------------
+		INCF		STEP_ON,f		;ONを+1	
 		MOVF		STEP_ON,w		;現在のON値を読み取り
 		SUBWF		STEP_ALL,w		;全体のステップを減算します。
 		BTFSC		STATUS,Z		;結果は0の場合、ON==ALLの場合
@@ -53,7 +55,7 @@ H04
 		MOVF		STEP_ON,w		;
 		BTFSC		STATUS,Z		;
 		SLEEP
-		INCF		STEP_ON,f		;ONを+1	
+		
 		
 		
 		MOVF		STEP_ON,w		;
@@ -63,9 +65,26 @@ H04
 			
 		MOVF		STEP_ON,w		;
 		MOVWF		STEP_ON_CONT	;
+		MOVWF		H04W_LED		;
+		MOVF		STEP_OFF,w		;
+		BTFSC		STATUS,Z		;
+		INCF		STEP_OFF,f		;
 		MOVF		STEP_OFF,w		;
 		MOVWF		STEP_OFF_CONT	;
-		
+		BCF			GPIO,0			;
+		MOVF		H04W_LED,w		;
+		BTFSC		STATUS,Z		;
+		GOTO		H4_EEND			;		
+
+H4_LED	
+		BSF			GPIO,1			;
+		CALL		TIMER2			;
+		BCF			GPIO,1			;
+		CALL		TIMER2			;
+		DECFSZ		H04W_LED,f		;
+		GOTO		H4_LED			;
+
+H4_EEND
 		BSF			INTCON,GIE		;
 		MOVF		H04W_TEMP,w		;		
 		
@@ -82,7 +101,7 @@ INIT
 		MOVLW		B'00011100'		;GIPO4,3入力端子
 		MOVWF		TRISIO			;
 		CLRF		ANSEL			;アナログをクリア、デジタル入力
-		BCF			OPTION_REG,1	;
+		BCF			OPTION_REG,6	;
 		
 		BCF			STATUS,RP0		;BANK0 選択
 		MOVLW		B'00000111'		;比較OFF
@@ -91,7 +110,7 @@ INIT
 		BSF			INTCON,INTE		;INTE：GP2/INT 外部中断使能位
 
 		
-		MOVLW		D'10'			;
+		MOVLW		D'11'			;
 		MOVWF		STEP_ALL		;
 		MOVLW		D'1'			;
 		MOVWF		STEP_ON			;
@@ -104,7 +123,7 @@ INIT
 ;--------Main
 MAIN
 T1_ON
-		DECFSZ		STEP_ON_CONT	;
+		DECFSZ		STEP_ON_CONT,f	;
 		GOTO		T1_ON			;
 		BCF			GPIO,0			;	
 		MOVF		STEP_ON,w		;
@@ -112,7 +131,7 @@ T1_ON
 		GOTO		T1_OFF			;
 	
 T1_OFF
-		DECFSZ		STEP_OFF_CONT	;
+		DECFSZ		STEP_OFF_CONT,f	;
 		GOTO		T1_OFF			;
 		BSF			GPIO,0			;
 		MOVF		STEP_OFF,w		;
