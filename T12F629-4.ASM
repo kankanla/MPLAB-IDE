@@ -75,11 +75,11 @@ H04
 
 H4_LED
 		BSF			GPIO,1			;
-		CALL		TIMER2			;
+	;	CALL		TIMER2			;
 		BCF			GPIO,1			;
-		CALL		TIMER2			;
+		;CALL		TIMER2			;
 		DECFSZ		H04W_LED,f		;
-		GOTO		H4_LED			;
+		GOTO		$ - 3			;
 
 H4_EEND
 		BSF			INTCON,GIE		;
@@ -104,7 +104,7 @@ INIT
 		BSF			INTCON,GIE		;PEIE：外?中断使能位
 		BSF			INTCON,INTE		;INTE：GP2/INT 外部中断使能位
 
-		MOVLW		D'11'			;
+		MOVLW		D'10'			;
 		MOVWF		STEP_ALL		;
 		MOVLW		D'1'			;
 		MOVWF		STEP_ON			;
@@ -116,10 +116,16 @@ INIT
 
 ;--------Main
 MAIN
+; 4MHZ 内部クロック
+; 25KHz 作成
+; 25KHz = 40us
+; 4Mhz/4  = 1us 
+; 25KHｚ T = 40 サイクル				
 T1_ON
 		DECFSZ		STEP_ON_CONT,f	;
 		GOTO		T1_ON			;
 		BCF			GPIO,0			;
+		NOP							;
 		MOVF		STEP_ON,w		;
 		MOVWF		STEP_ON_CONT	;
 		GOTO		T1_OFF			;
@@ -128,6 +134,7 @@ T1_OFF
 		DECFSZ		STEP_OFF_CONT,f	;
 		GOTO		T1_OFF			;
 		BSF			GPIO,0			;
+		NOP							;
 		MOVF		STEP_OFF,w		;
 		MOVWF		STEP_OFF_CONT	;
 		GOTO		T1_ON			;
@@ -188,18 +195,6 @@ EEND
 		MOVLW		B'00000000'		;すべての出力ボードをクリア
 		MOVWF		GPIO			;すべての出力ボードをクリア
 		GOTO		EEND			;
-
-;--------25Khz
-;4Mhz 1C = 0.25us
-;1c = 1us
-;25kHz  1s/25000= 0.00004s = 0.04ms = 40us
-
-KHZ25_T	MOVLW		D'19'			;D'25' 0.1ミリ秒
-		MOVWF		KHZ25			;
-KHZ25_LOOP							;
-		DECFSZ		KHZ25,1			;
-		GOTO		KHZ25_LOOP		;
-		RETURN						;
 
 
 ;--------Timer
