@@ -1,16 +1,16 @@
 ;	Test
-;	PIC12F675 ƒXƒeƒbƒsƒ“ƒOƒ‚[ƒ^‰ñ“]‚·‚é
-;	GP0,GP1,GP2,GP4 o—ÍÝ’è
-;	GP3,GP5 “ü—ÍÝ’èA‰ñ“]‚ðC³‚·‚é
-;	GP3³‰ñ“]AGP5‹t‰ñ“]A1ƒNƒŠƒbƒNA1ƒXƒeƒbƒv‚É‚È‚è‚Ü‚·B
-;	GP3AGP5“¯Žž‚É‰Ÿ‚·‚ÆA‰ñ“]‚ªŽn‚Ü‚è‚Ü‚·B
-;	‰ñ“]‚ÌÝ’è‚ÍƒvƒƒOƒ‰ƒ€‚ÅŽ–‘O‚ÉÝ’è‚³‚ê‚Ü‚·B
+;	PIC12F675 ã‚¹ãƒ†ãƒƒãƒ”ãƒ³ã‚°ãƒ¢ãƒ¼ã‚¿å›žè»¢ã™ã‚‹
+;	GP0,GP1,GP2,GP4 å‡ºåŠ›è¨­å®š
+;	GP3,GP5 å…¥åŠ›è¨­å®šã€å›žè»¢ã‚’ä¿®æ­£ã™ã‚‹
+;	GP3æ­£å›žè»¢ã€GP5é€†å›žè»¢ã€1ã‚¯ãƒªãƒƒã‚¯ã€1ã‚¹ãƒ†ãƒƒãƒ—ã«ãªã‚Šã¾ã™ã€‚
+;	GP3ã€GP5åŒæ™‚ã«æŠ¼ã™ã¨ã€å›žè»¢ãŒå§‹ã¾ã‚Šã¾ã™ã€‚
+;	å›žè»¢ã®è¨­å®šã¯ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§äº‹å‰ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
 ;---------
 
 		LIST		P=12F675
 		INCLUDE		P12F675.INC
 ;---------
-;	CONFIG 		Ý’è
+;	CONFIG 		è¨­å®š
 		CB		=	_CPD_OFF
 		CB		&=	_CP_OFF
 		CB		&=	_BODEN_ON
@@ -28,7 +28,7 @@
 		CNT2			;TIME
 		CNT3			;TIME
 		CNT4			;TIME
-		MOTER_PWR		;’Ê“dŽžŠÔ
+		MOTER_PWR		;é€šé›»æ™‚é–“
 		MOTER_PWR_TEMP	;
 		R_PWR_OFF		;R_PWR_OFF	
 		L_PWR_OFF		;L_PWR_OFF
@@ -51,88 +51,88 @@
 		
 ;----------
 INIT
-		BSF			STATUS,RP0		;BANK1 ‘I‘ð
-		MOVLW		B'00101000'		;GIPO5,3“ü—Í’[Žq
-		MOVWF		TRISIO			;GIPO5,3“ü—Í’[Žq
-		CLRF		ANSEL			;ƒAƒiƒƒO‚ðƒNƒŠƒAAƒfƒWƒ^ƒ‹“ü—Í
+		BSF			STATUS,RP0		;BANK1 é¸æŠž
+		MOVLW		B'00101000'		;GIPO5,3å…¥åŠ›ç«¯å­
+		MOVWF		TRISIO			;GIPO5,3å…¥åŠ›ç«¯å­
+		CLRF		ANSEL			;ã‚¢ãƒŠãƒ­ã‚°ã‚’ã‚¯ãƒªã‚¢ã€ãƒ‡ã‚¸ã‚¿ãƒ«å…¥åŠ›
 
-		BCF			STATUS,RP0		;BANK0 ‘I‘ð
-		MOVLW		B'00000111'		;”äŠrOFF
-		MOVWF		CMCON			;”äŠrOFF
-		BCF			INTCON,PEIE		;‚·‚×‚Ä‚ÌŠO•”Š„‚èž‚Ý‚ð‹ÖŽ~
+		BCF			STATUS,RP0		;BANK0 é¸æŠž
+		MOVLW		B'00000111'		;æ¯”è¼ƒOFF
+		MOVWF		CMCON			;æ¯”è¼ƒOFF
+		BCF			INTCON,PEIE		;ã™ã¹ã¦ã®å¤–éƒ¨å‰²ã‚Šè¾¼ã¿ã‚’ç¦æ­¢
 		
-		;CALL		DRV1			;”gŒ`ƒhƒ‰ƒCƒu
-		;CALL		DRV2			;ƒtƒ‹ƒXƒeƒbƒv
-		CALL		DRV3			;ƒtƒ‹ƒXƒeƒbƒv
+		;CALL		DRV1			;æ³¢å½¢ãƒ‰ãƒ©ã‚¤ãƒ–
+		;CALL		DRV2			;ãƒ•ãƒ«ã‚¹ãƒ†ãƒƒãƒ—
+		CALL		DRV3			;ãƒ•ãƒ«ã‚¹ãƒ†ãƒƒãƒ—
 		
 		MOVLW		D'7'			;
-		MOVWF		MOTER_PWR		;ƒ‚[ƒ^1ƒXƒeƒbƒv‚Ì’Ê“dŽžŠÔ
+		MOVWF		MOTER_PWR		;ãƒ¢ãƒ¼ã‚¿1ã‚¹ãƒ†ãƒƒãƒ—ã®é€šé›»æ™‚é–“
 		
-		MOVLW		D'90'			;4•ª‚Ì1, 90x4=360 —˜—p‚Ìƒ‚[ƒ^[‚Ì‚P‰ñ“]ƒXƒeƒbƒv”‚ðŠ„‚é4;
+		MOVLW		D'90'			;4åˆ†ã®1, 90x4=360 åˆ©ç”¨ã®ãƒ¢ãƒ¼ã‚¿ãƒ¼ã®ï¼‘å›žè»¢ã‚¹ãƒ†ãƒƒãƒ—æ•°ã‚’å‰²ã‚‹4;
 		MOVWF		MOTOR_STEP		;
 		
-		MOVLW		D'7'			;‰E‰ñ“]SPEED,POWER_OFFŽžŠÔ‚ª’·‚­‚È‚é‚Æ’x‚­‚È‚è‚Ü‚·
+		MOVLW		D'7'			;å³å›žè»¢SPEED,POWER_OFFæ™‚é–“ãŒé•·ããªã‚‹ã¨é…ããªã‚Šã¾ã™
 		MOVWF		R_PWR_OFF		;
 		
-		MOVLW		D'7'			;¶‰ñ“]SPEED,POWER_OFFŽžŠÔ‚ª’·‚­‚È‚é‚Æ’x‚­‚È‚è‚Ü‚·
+		MOVLW		D'7'			;å·¦å›žè»¢SPEED,POWER_OFFæ™‚é–“ãŒé•·ããªã‚‹ã¨é…ããªã‚Šã¾ã™
 		MOVWF		L_PWR_OFF		;
 		
-		MOVLW		D'1';			;’Ê“dŒã‚Ì‰ñ“]‰ñ”
+		MOVLW		D'1';			;é€šé›»å¾Œã®å›žè»¢å›žæ•°
 		MOVWF		STEP_CNT		;
 		
 ;--------Main
-MAIN								;ƒƒCƒ“
-		CALL 		R				;‰E‰ñ“]
-		CALL		TIMER3			;’x‰„
-	;	CALL 		L				;¶‰ñ“]
-	;	CALL		TIMER3			;’x‰„
-		DECFSZ		STEP_CNT,1		;‰ñ“]ƒJƒEƒ“ƒg‚ð-1
-		GOTO 		MAIN			;0o‚È‚¯‚ê‚ÎMain‚Ö
+MAIN								;ãƒ¡ã‚¤ãƒ³
+		CALL 		R				;å³å›žè»¢
+		CALL		TIMER3			;é…å»¶
+	;	CALL 		L				;å·¦å›žè»¢
+	;	CALL		TIMER3			;é…å»¶
+		DECFSZ		STEP_CNT,1		;å›žè»¢ã‚«ã‚¦ãƒ³ãƒˆã‚’-1
+		GOTO 		MAIN			;0å‡ºãªã‘ã‚Œã°Mainã¸
 
-		GOTO 		EEND			;0‚É‚È‚Á‚½ê‡‚ÍI—¹
+		GOTO 		EEND			;0ã«ãªã£ãŸå ´åˆã¯çµ‚äº†
 		
 ;--------end
 EEND
-		MOVLW		B'00000000'		;‚·‚×‚Ä‚Ìo—Íƒ{[ƒh‚ðƒNƒŠƒA
-		MOVWF		GPIO			;‚·‚×‚Ä‚Ìo—Íƒ{[ƒh‚ðƒNƒŠƒA
+		MOVLW		B'00000000'		;ã™ã¹ã¦ã®å‡ºåŠ›ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
+		MOVWF		GPIO			;ã™ã¹ã¦ã®å‡ºåŠ›ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
 		NOP							;
-		BTFSC		GPIO,3			;GPIO,3‚Ìó‘Ô‚ðŠm”FAƒfƒtƒHƒ‹ƒg‚Í0
-		;CALL		R				;‰Ÿ‚³‚ê‚½ŽžA‰E‰ñ“]‚ðŒÄ‚Ño‚µ
+		BTFSC		GPIO,3			;GPIO,3ã®çŠ¶æ…‹ã‚’ç¢ºèªã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯0
+		;CALL		R				;æŠ¼ã•ã‚ŒãŸæ™‚ã€å³å›žè»¢ã‚’å‘¼ã³å‡ºã—
 		CALL 		L_ROTATION		;
 		NOP							;
-		BTFSC		GPIO,5			;GPIO,53‚Ìó‘Ô‚ðŠm”FAƒfƒtƒHƒ‹ƒg‚Í0
-		;CALL		L				;‰Ÿ‚³‚ê‚½ŽžA‰E‰ñ“]‚ðŒÄ‚Ño‚µ
+		BTFSC		GPIO,5			;GPIO,53ã®çŠ¶æ…‹ã‚’ç¢ºèªã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯0
+		;CALL		L				;æŠ¼ã•ã‚ŒãŸæ™‚ã€å³å›žè»¢ã‚’å‘¼ã³å‡ºã—
 		CALL		R_ROTATION		;
 		NOP							;
 		GOTO		EEND			;
 		
 		
 ;--------Main2
-R									;‰EˆêŽü‰ñ“]
+R									;å³ä¸€å‘¨å›žè»¢
 		MOVF		MOTOR_STEP,0	;
 		MOVWF		CNTNFA;			;
 R_LOOP
-		CALL		R_ROTATION		;‰E4ƒXƒeƒbƒv
+		CALL		R_ROTATION		;å³4ã‚¹ãƒ†ãƒƒãƒ—
 		DECFSZ		CNTNFA,1		;
 		GOTO		R_LOOP			;
 		RETURN						;
 		
-L									;¶ˆêŽü‰ñ“]
+L									;å·¦ä¸€å‘¨å›žè»¢
 		MOVF		MOTOR_STEP,0	;
 		MOVWF		CNTNFB;			;
 L_LOOP
-		CALL		L_ROTATION		;¶4ƒXƒeƒbƒv
+		CALL		L_ROTATION		;å·¦4ã‚¹ãƒ†ãƒƒãƒ—
 		DECFSZ		CNTNFB,1		;
 		GOTO		L_LOOP			;
 		RETURN
 
 ;--------
-L_ROTATION							;¶4ƒXƒeƒbƒv
-		MOVLW		LA				;LA‚ÌƒAƒhƒŒƒX‚ð“Ç‚ÝŽæ‚è
-		MOVWF		FSR				;FSR‚ÉƒAƒhƒŒƒX‚Æ‘‚«ž‚Ý
+L_ROTATION							;å·¦4ã‚¹ãƒ†ãƒƒãƒ—
+		MOVLW		LA				;LAã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’èª­ã¿å–ã‚Š
+		MOVWF		FSR				;FSRã«ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨æ›¸ãè¾¼ã¿
 L_INDF_LOOP
-		MOVF		INDF,0			;INDFƒŒƒWƒXƒ^‚ð“Ç‚ÝŽæ‚è
-		MOVWF		GPIO			;‰ñ“]ƒf[ƒ^‚ðo—Í
+		MOVF		INDF,0			;INDFãƒ¬ã‚¸ã‚¹ã‚¿ã‚’èª­ã¿å–ã‚Š
+		MOVWF		GPIO			;å›žè»¢ãƒ‡ãƒ¼ã‚¿ã‚’å‡ºåŠ›
 		MOVWF		FSR_TEMP		;
 		MOVF		MOTER_PWR,0		;
 		MOVWF		MOTER_PWR_TEMP	;
@@ -149,7 +149,7 @@ L_INDF_LOOP
 		GOTO		L_INDF_LOOP		;
 
 ;--------			
-R_ROTATION							;¶4ƒXƒeƒbƒv
+R_ROTATION							;å·¦4ã‚¹ãƒ†ãƒƒãƒ—
 		MOVLW		LD				;
 		MOVWF		FSR				;
 R_INDF_LOOP
@@ -172,25 +172,25 @@ R_INDF_LOOP
 
 ;--------
 DRV1
-		MOVLW		B'00010001'		;”gŒ`ƒhƒ‰ƒCƒu
+		MOVLW		B'00010001'		;æ³¢å½¢ãƒ‰ãƒ©ã‚¤ãƒ–
 		MOVWF		LA;				;
-		MOVLW		B'00000011'		;”gŒ`ƒhƒ‰ƒCƒu
+		MOVLW		B'00000011'		;æ³¢å½¢ãƒ‰ãƒ©ã‚¤ãƒ–
 		MOVWF		LB				;
-		MOVLW		B'00000110'		;”gŒ`ƒhƒ‰ƒCƒu
+		MOVLW		B'00000110'		;æ³¢å½¢ãƒ‰ãƒ©ã‚¤ãƒ–
 		MOVWF		LC				;
-		MOVLW		B'00010100'		;”gŒ`ƒhƒ‰ƒCƒu
+		MOVLW		B'00010100'		;æ³¢å½¢ãƒ‰ãƒ©ã‚¤ãƒ–
 		MOVWF		LD				;
 		RETURN
 		
 ;--------	
 DRV2
-		MOVLW		B'00000001'		;ƒtƒ‹ƒXƒeƒbƒv
+		MOVLW		B'00000001'		;ãƒ•ãƒ«ã‚¹ãƒ†ãƒƒãƒ—
 		MOVWF		LA;				;
-		MOVLW		B'00000010'		;ƒtƒ‹ƒXƒeƒbƒv
+		MOVLW		B'00000010'		;ãƒ•ãƒ«ã‚¹ãƒ†ãƒƒãƒ—
 		MOVWF		LB				;
-		MOVLW		B'00000100'		;ƒtƒ‹ƒXƒeƒbƒv
+		MOVLW		B'00000100'		;ãƒ•ãƒ«ã‚¹ãƒ†ãƒƒãƒ—
 		MOVWF		LC				;
-		MOVLW		B'00010000'		;ƒtƒ‹ƒXƒeƒbƒv
+		MOVLW		B'00010000'		;ãƒ•ãƒ«ã‚¹ãƒ†ãƒƒãƒ—
 		MOVWF		LD				;
 		RETURN
 
@@ -222,14 +222,14 @@ MLOOP1	NOP
 		RETURN
 
 ;--------Timer
-TIMER1	MOVLW		D'25'			;0.1ƒ~ƒŠ•b
+TIMER1	MOVLW		D'25'			;0.1ãƒŸãƒªç§’
 		MOVWF		CNT1
 LOOP1	NOP
 		DECFSZ		CNT1,1
 		GOTO		LOOP1
 		RETURN
 
-TIMER2	MOVLW		D'100'			;D'100' -> 10ƒ~ƒŠ•b D'50' -> 5ƒ~ƒŠ•b
+TIMER2	MOVLW		D'100'			;D'100' -> 10ãƒŸãƒªç§’ D'50' -> 5ãƒŸãƒªç§’
 		MOVWF		CNT2
 LOOP2	NOP
 		CALL		TIMER1
@@ -237,7 +237,7 @@ LOOP2	NOP
 		GOTO		LOOP2
 		RETURN
 		
-TIMER3	MOVLW		D'50'			;1/2•b
+TIMER3	MOVLW		D'50'			;1/2ç§’
 		MOVWF		CNT3
 LOOP3	NOP
 		CALL		TIMER2
@@ -245,7 +245,7 @@ LOOP3	NOP
 		GOTO		LOOP3
 		RETURN
 
-TIMER4	MOVLW		D'10'			;10•b
+TIMER4	MOVLW		D'10'			;10ç§’
 		MOVWF		CNT4
 LOOP4	NOP
 		CALL		TIMER3
