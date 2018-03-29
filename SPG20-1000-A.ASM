@@ -60,20 +60,19 @@ INIT
 		MOVWF		CMCON			;比較OFF
 		BCF			INTCON,PEIE		;すべての外部割り込みを禁止
 		
-		CALL		DRV1			;波形ドライブ
-		;CALL		DRV2			;フルステップ
-		;CALL		DRV3			;フルステップ
+		CALL		DRV1			;フルステップ
+		;CALL		DRV2			;波形ドライブ
 		
-		MOVLW		D'11'			;7-14
+		MOVLW		D'14'			;7-14
 		MOVWF		MOTER_PWR		;モータ1ステップの通電時間
 		
 		MOVLW		D'90'			;4分の1, 90x4=360 利用のモーターの１回転ステップ数を割る4;
 		MOVWF		MOTOR_STEP		;
 		
-		MOVLW		D'5'			;右回転SPEED,POWER_OFF時間が長くなると遅くなります
+		MOVLW		D'2'			;右回転SPEED,POWER_OFF時間が長くなると遅くなります
 		MOVWF		R_PWR_OFF		;
 		
-		MOVLW		D'8'			;左回転SPEED,POWER_OFF時間が長くなると遅くなります
+		MOVLW		D'2'			;左回転SPEED,POWER_OFF時間が長くなると遅くなります
 		MOVWF		L_PWR_OFF		;
 		
 		MOVLW		D'100';			;通電後の回転回数
@@ -90,11 +89,19 @@ START
 	;	CALL 		L				;左回転
 	;	CALL		TIMER3			;遅延
 		BTFSC		GPIO,5			;一時停止
-		GOTO		$ - 1			;一時停止
+		CALL		TEMP_STOP		;
 		DECFSZ		STEP_CNT,1		;回転カウントを-1
 		GOTO 		START			;0出なければMainへ
 		GOTO 		MAIN			;0になった場合は終了
-		
+
+TEMP_STOP
+		BTFSC		GPIO,5			;
+		GOTO		$ - 1			;
+		BTFSS		GPIO,5			;
+		GOTO		$ - 1 			;
+		RETURN		
+
+
 ;--------end
 EEND
 		GOTO		EEND			;
@@ -165,39 +172,28 @@ R_INDF_LOOP
 
 ;--------
 DRV1
-		MOVLW		B'00010001'		;波形ドライブ
+		MOVLW		B'00010001'		;フルステップ
 		MOVWF		LA;				;
-		MOVLW		B'00000011'		;波形ドライブ
+		MOVLW		B'00000011'		;フルステップ
 		MOVWF		LB				;
-		MOVLW		B'00000110'		;波形ドライブ
+		MOVLW		B'00000110'		;フルステップ
 		MOVWF		LC				;
-		MOVLW		B'00010100'		;波形ドライブ
+		MOVLW		B'00010100'		;フルステップ
 		MOVWF		LD				;
 		RETURN
 		
 ;--------	
 DRV2
-		MOVLW		B'00000001'		;フルステップ
+		MOVLW		B'00000001'		;波形ドライブ
 		MOVWF		LA;				;
-		MOVLW		B'00000010'		;フルステップ
+		MOVLW		B'00000010'		;波形ドライブ
 		MOVWF		LB				;
-		MOVLW		B'00000100'		;フルステップ
+		MOVLW		B'00000100'		;波形ドライブ
 		MOVWF		LC				;
-		MOVLW		B'00010000'		;フルステップ
+		MOVLW		B'00010000'		;波形ドライブ
 		MOVWF		LD				;
 		RETURN
 
-;--------
-DRV3	
-		MOVLW		B'00000011'		;;
-		MOVWF		LA;				;
-		MOVLW		B'00000110'		;;
-		MOVWF		LB				;
-		MOVLW		B'00010100'		;;
-		MOVWF		LC				;
-		MOVLW		B'00000000'		;;
-		MOVWF		LD				;
-		RETURN
 
 ;--------
 CLRGPIO	NOP
