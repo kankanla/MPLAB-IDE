@@ -33,7 +33,8 @@
 		L_PWR_OFF		;L_PWR_OFF
 		FSR_TEMP		;
 		PWR_OFF_TEMP	;
-		STEP_CNT		;
+		STEP_CNT		;回転回数カウント用
+		STEP_ALL		;回転回数
 		MOTOR_STEP		;
 		CNTNFA			;
 		CNTNFB			;
@@ -76,10 +77,13 @@ INIT
 		MOVWF		L_PWR_OFF		;
 		
 		MOVLW		D'100';			;通電後の回転回数
+		MOVWF		STEP_ALL		;
 		MOVWF		STEP_CNT		;
 		
 ;--------Main
 MAIN								;メイン
+		MOVF		STEP_ALL,w		;
+		MOVWF		STEP_CNT		;
 		CLRF		GPIO			;GPIOクリア
 		BTFSS		GPIO,5			;スタートボタン
 		GOTO		$ - 1			;
