@@ -25,6 +25,11 @@
 		CNT2			;TIME
 		CNT3			;TIME
 		CNT4			;TIME
+		RAIL1			;
+		RAIL2			;
+		RAIL3			;
+		RAIL4			;
+		RAIL5			;
 		ENDC			;
 
 ;----------
@@ -48,41 +53,89 @@ INIT
 		MOVLW		B'00101000'		;GIPO5,3入力端子
 		MOVWF		TRISIO			;
 		CLRF		ANSEL			;アナログをクリア、デジタル入力
-		BCF			OPTION_REG,7	;
 		
 		BCF			STATUS,RP0		;BANK0 選択
 		MOVLW		B'00000111'		;比較OFF
 		MOVWF		CMCON			;比較OFF
 		CLRF		GPIO			;
 
+MODE
+		MOVLW		B'00010111'		;
+		MOVWF		RAIL1			;
+		MOVLW		B'00010110'		;
+		MOVWF		RAIL2			;
+		MOVLW		B'00010100'		;
+		MOVWF		RAIL3			;
+		MOVLW		B'00010000'		;
+		MOVWF		RAIL4			;
+		MOVLW		B'00000000'		;
+		MOVWF		RAIL5			;	
+
+
 ;--------Main
-MAIN
-		CALL		TIMER4
-		NOP							;発射待機
+MAIN	
+		BTFSC		GPIO,3			;
+		GOTO		MODE2			;
+;		CALL		TIMER3
 		BTFSS		GPIO,5			;発射ボタン押す、GPIO5 1になり、次のコマンドをスキップ
 		GOTO		MAIN			;
 		
+MODE1
+		MOVF		RAIL1,w			;
+		MOVWF		GPIO			;
+		CALL		TIMER2			;
+		CALL		TIMER2			;
+	
+		MOVF		RAIL2,w			;
+		MOVWF		GPIO			;
+		CALL		TIMER2			;
+		CALL		TIMER2			;
+
+		MOVF		RAIL3,w			;
+		MOVWF		GPIO			;
+		CALL		TIMER2			;
+		CALL		TIMER2			;
+
+		MOVF		RAIL4,w			;
+		MOVWF		GPIO			;
+		CALL		TIMER2			;
+		CALL		TIMER2			;
+
+		MOVF		RAIL5,w			;
+		MOVWF		GPIO			;
+		CALL		TIMER2			;
+
+		BTFSC		GPIO,5			;発射ボタンを離すとMainに戻る
+		GOTO		$ - 1			;
+		GOTO		MAIN	
+
+
+MODE2
 		BSF			GPIO,0			;コイルGPIO,0
+		CALL		TIMER2			;
 		CALL		TIMER2			;
 		BCF			GPIO,0			;
 		CALL		TIMER1			;
 
 		BSF			GPIO,1			;コイルGPIO,1
 		CALL		TIMER2			;
+		CALL		TIMER2			;
 		BCF			GPIO,1			;
 		CALL		TIMER1			;
 
 		BSF			GPIO,2			;コイルGPIO,2
 		CALL		TIMER2			;
+		CALL		TIMER2			;
 		BCF			GPIO,2			;
 		CALL		TIMER1			;
 
 		BSF			GPIO,4			;コイルGPIO,4
-		CALL		TIMER2
+		CALL		TIMER2			;
+		CALL		TIMER2			;
 		BCF			GPIO,4			;
 		CALL		TIMER1			;
 
-		BTFSC		GPIO,5			;発射ボタンを離すとMainに戻る
+		BTFSC		GPIO,3			;発射ボタンを離すとMainに戻る
 		GOTO		$ - 1			;
 		GOTO		MAIN			;
 
