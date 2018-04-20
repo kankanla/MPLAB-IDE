@@ -5,7 +5,7 @@
 		LIST		P=12F675
 		INCLUDE		P12F675.INC
 ;---------
-;	CONFIG 		Ý’è
+;	CONFIG 		è¨­å®š
 		CB		=	_CPD_OFF
 		CB		&=	_CP_OFF
 		CB		&=	_BODEN_ON
@@ -25,118 +25,115 @@
 		ENDC			;
 
 ;----------
-		ORG			0				;
+		ORG		0			;
 		GOTO		INIT			;
 		
-		ORG			4				;
-		GOTO		H04				;
+		ORG		4			;
+		GOTO		H04			;
 		
 ;----------
 H04		
-		MOVLW		D'230'			;TMR0?‰?
-		MOVWF		TMR0			;TMR0?‰?
+		MOVLW		D'230'			;TMR0?åˆ?
+		MOVWF		TMR0			;TMR0?åˆ?
 		MOVWF		H04W_TEMP		;
-		BCF			INTCON,GIE		;0 = ‹ÖŽ~Š—L’†’f
-		;BCF			INTCON,INTF		;0 = ‹ÖŽ~ GP2/INT ŠO•”’†’f
-		;BCF			INTCON,T0IE		;0 = ‹ÖŽ~ TMR0 ˆìo’†’f
-		BCF			INTCON,T0IF		;1 = TMR0 Šñ‘¶Ší›ß?ˆìo´—ë i•K?—p?Œ´—ëj
+		BCF		INTCON,GIE		;0 = ç¦æ­¢æ‰€æœ‰ä¸­æ–­
+		;BCF		INTCON,INTF		;0 = ç¦æ­¢ GP2/INT å¤–éƒ¨ä¸­æ–­
+		;BCF		INTCON,T0IE		;0 = ç¦æ­¢ TMR0 æº¢å‡ºä¸­æ–­
+		BCF		INTCON,T0IF		;1 = TMR0 å¯„å­˜å™¨å·²?æº¢å‡ºæ¸…é›¶ ï¼ˆå¿…?ç”¨?ä»¶æ¸…é›¶ï¼‰
 
-		BSF			GPIO,0			;
+		BSF		GPIO,0			;
 		NOP
-		BCF			GPIO,0			;
+		BCF		GPIO,0			;
 
-		BSF			INTCON,GIE		;1 = Žg”\Š—L–¢› •Á“I’†’f
+		BSF		INTCON,GIE		;1 = ä½¿èƒ½æ‰€æœ‰æœªå±è”½çš„ä¸­æ–­
 		MOVF		H04W_TEMP,w		;
-		RETFIE						;
+		RETFIE					;
 	
 		
 ;----------
 INIT
-		BSF			STATUS,RP0		;BANK1 ‘I‘ð
-		CALL		H'3FF'			;Zy“à•”U?Ší
-		MOVWF		OSCCAL			;Zy“à•”U?Ší
-		MOVLW		B'00011100'		;GIPO4,3“ü—Í’[Žq
-		MOVWF		TRISIO			;Zy“à•”U?Ší
-		CLRF		ANSEL			;”Žš I/O
-		BCF			OPTION_REG,T0CS	;TMR0 ??Œ¹??ˆÊ
-		BCF			OPTION_REG,PSA	;0 = «?•ª?Ší•ª”z? TIMER0 –Í?
-		BCF			OPTION_REG,T0SE	;1 = GP2/T0CKI ˆø‹r“I‰º~‰ˆ?ú
+		BSF		STATUS,RP0		;BANK1 é¸æŠž
+		CALL		H'3FF'			;æ ¡å‡†å†…éƒ¨æŒ¯?å™¨
+		MOVWF		OSCCAL			;æ ¡å‡†å†…éƒ¨æŒ¯?å™¨
+		MOVLW		B'00011100'		;GIPO4,3å…¥åŠ›ç«¯å­
+		MOVWF		TRISIO			;æ ¡å‡†å†…éƒ¨æŒ¯?å™¨
+		CLRF		ANSEL			;æ•°å­— I/O
+		BCF		OPTION_REG,T0CS		;TMR0 ??æº??ä½
+		BCF		OPTION_REG,PSA		;0 = å°†?åˆ†?å™¨åˆ†é…? TIMER0 æ¨¡?
+		BCF		OPTION_REG,T0SE		;1 = GP2/T0CKI å¼•è„šçš„ä¸‹é™æ²¿?å¢ž
 
-		BCF			OPTION_REG,PS2	;PS2:PS0F?•ª?Ší“I•ª?”ä??ˆÊ	
-		BCF			OPTION_REG,PS1	;PS2:PS0F?•ª?Ší“I•ª?”ä??ˆÊ
-		BCF			OPTION_REG,PS0	;PS2:PS0F?•ª?Ší“I•ª?”ä??ˆÊ
-									;000		1 : 2
-									;001		1 : 4
-									;010		1 : 8
-									;011		1 : 16
-									;100		1 : 32
-									;101		1 : 64
-									;110		1 : 128
-									;111		1 : 256
+		BCF		OPTION_REG,PS2		;PS2:PS0ï¼š?åˆ†?å™¨çš„åˆ†?æ¯”??ä½	
+		BCF		OPTION_REG,PS1		;PS2:PS0ï¼š?åˆ†?å™¨çš„åˆ†?æ¯”??ä½
+		BCF		OPTION_REG,PS0		;PS2:PS0ï¼š?åˆ†?å™¨çš„åˆ†?æ¯”??ä½
+							;000		1 : 2
+							;001		1 : 4
+							;010		1 : 8
+							;011		1 : 16
+							;100		1 : 32
+							;101		1 : 64
+							;110		1 : 128
+							;111		1 : 256
 
-		BCF			STATUS,RP0		;BANK0 ‘I‘ð
-		MOVLW		B'00000111'		;”äŠrOFF
-		MOVWF		CMCON			;”äŠrOFF
-		BSF			INTCON,GIE		;1 = Žg”\Š—L–¢› •Á“I’†’f
-		BSF			INTCON,INTE		;1 = Žg”\ GP2/INT ŠO•”’†’f
-		BSF			INTCON,T0IE		;1 = Žg”\ TMR0 ˆìo’†’f
+		BCF		STATUS,RP0		;BANK0 é¸æŠž
+		MOVLW		B'00000111'		;æ¯”è¼ƒOFF
+		MOVWF		CMCON			;æ¯”è¼ƒOFF
+		BSF		INTCON,GIE		;1 = ä½¿èƒ½æ‰€æœ‰æœªå±è”½çš„ä¸­æ–­
+		BSF		INTCON,INTE		;1 = ä½¿èƒ½ GP2/INT å¤–éƒ¨ä¸­æ–­
+		BSF		INTCON,T0IE		;1 = ä½¿èƒ½ TMR0 æº¢å‡ºä¸­æ–­
 
 
-		MOVLW		D'230'			;TMR0?‰?
-		MOVWF		TMR0			;TMR0?‰?
+		MOVLW		D'230'			;TMR0?åˆ?
+		MOVWF		TMR0			;TMR0?åˆ?
 
 ;--------Main
 MAIN	NOP
 		GOTO		MAIN			;
-
-
-
 		
 ;--------end
 EEND
-		MOVLW		B'00000000'		;‚·‚×‚Ä‚Ìo—Íƒ{[ƒh‚ðƒNƒŠƒA
-		MOVWF		GPIO			;‚·‚×‚Ä‚Ìo—Íƒ{[ƒh‚ðƒNƒŠƒA
+		MOVLW		B'00000000'		;ã™ã¹ã¦ã®å‡ºåŠ›ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
+		MOVWF		GPIO			;ã™ã¹ã¦ã®å‡ºåŠ›ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
 		GOTO		EEND			;
 
 
 ;--------Timer
-; 4MHZ “à•”ƒNƒƒbƒN
-; 25KHz ì¬
+; 4MHZ å†…éƒ¨ã‚¯ãƒ­ãƒƒã‚¯
+; 25KHz ä½œæˆ
 ; 25KHz = 40us
 ; 4Mhz/4  = 1us 
-; 25KH‚š T = 40 ƒTƒCƒNƒ‹				
+; 25KHï½š T = 40 ã‚µã‚¤ã‚¯ãƒ«				
 
-TIMER1	MOVLW		D'25'			;D'25' 0.1ƒ~ƒŠ•b
+TIMER1		MOVLW		D'25'			;D'25' 0.1ãƒŸãƒªç§’
 		MOVWF		CNT1			;
-LOOP1	NOP							;
+LOOP1		NOP					;
 		DECFSZ		CNT1,1			;
 		GOTO		LOOP1			;
-		RETURN						;
+		RETURN					;
 
-TIMER2	MOVLW		D'100'			;D'100' -> 10ƒ~ƒŠ•b D'50' -> 5ƒ~ƒŠ•b
+TIMER2		MOVLW		D'100'			;D'100' -> 10ãƒŸãƒªç§’ D'50' -> 5ãƒŸãƒªç§’
 		MOVWF		CNT2
-LOOP2	NOP							;
+LOOP2		NOP					;
 		CALL		TIMER1			;
 		DECFSZ		CNT2,1			;
 		GOTO		LOOP2			;
-		RETURN						;
+		RETURN					;
 		
-TIMER3	MOVLW		D'50'			;1/2•b
+TIMER3		MOVLW		D'50'			;1/2ç§’
 		MOVWF		CNT3			;
-LOOP3	NOP							;
+LOOP3		NOP					;
 		CALL		TIMER2			;
 		DECFSZ		CNT3,1			;
 		GOTO		LOOP3			;
-		RETURN						;
+		RETURN					;
 
-TIMER4	MOVLW		D'10'			;10•b
+TIMER4		MOVLW		D'10'			;10ç§’
 		MOVWF		CNT4			;
-LOOP4	NOP							;
+LOOP4		NOP					;
 		CALL		TIMER3			;
 		DECFSZ		CNT4,1			;
 		GOTO		LOOP4			;
-		RETURN						;
+		RETURN					;
 
 ;--------
-E_END								;
-		END							;
+E_END							;
+		END					;
