@@ -37,8 +37,9 @@ H04
 		MOVWF		TMR0			;TMR0?初?
 		MOVWF		H04W_TEMP		;
 		BCF		INTCON,GIE		;0 = 禁止所有中断
-		;BCF		INTCON,INTF		;0 = 禁止 GP2/INT 外部中断
 		;BCF		INTCON,T0IE		;0 = 禁止 TMR0 溢出中断
+		;BCF		INTCON,INTE             ;0 = 禁止 GP2/INT 外部中断
+		BCF		INTCON,INTF		;1 = 发生 GP2/INT 外部中断清零 （必须用软件清零）
 		BCF		INTCON,T0IF		;1 = TMR0 寄存器已?溢出清零 （必?用?件清零）
 
 		BSF		GPIO,0			;
@@ -86,7 +87,7 @@ INIT
 		MOVWF		TMR0			;TMR0?初?
 
 ;--------Main
-MAIN	NOP
+MAIN		NOP
 		GOTO		MAIN			;
 		
 ;--------end
