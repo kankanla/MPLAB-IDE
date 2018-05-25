@@ -1,0 +1,47 @@
+MAIN
+
+		MOVLW		D'89'			;
+		MOVWF		CTEMP			;
+		CLRF		LED				;
+
+		
+		MOVF		CTEMP,w			;
+		SUBLW		D'33';
+		BTFSC		STATUS,C		; if C = 1(>0) goto next
+		GOTO		$ + 3			;
+		MOVLW		B'00000001'		;
+		MOVWF		LED				;
+
+		MOVF		CTEMP,w
+		SUBLW		D'66'			;
+		BTFSC		STATUS,C		; if C = 1(>0) goto next
+		GOTO		$ + 3			;
+		MOVLW		B'00000010'		;
+		MOVWF		LED				;
+
+		MOVF		CTEMP,w
+		SUBLW		D'99'			;
+		BTFSC		STATUS,C		; if C = 1(>0) goto next
+		GOTO		$ + 3			;
+		MOVLW		B'00000011'		;
+		MOVWF		LED				;
+	
+		MOVF		CTEMP,w
+		SUBLW		H'CC'			;
+		BTFSC		STATUS,C		; if C = 1(>0) goto next
+		GOTO		$ + 3			;
+		MOVLW		B'00000101'		;
+		MOVWF		LED				;
+
+		MOVF		CTEMP,w
+		SUBLW		H'FF'			;
+		BTFSC		STATUS,C		; if C = 1(>0) goto next
+		GOTO		$ + 3			;
+		MOVLW		B'00000111'		;
+		MOVWF		LED				;
+
+		MOVF		LED,w			;
+		MOVWF		GPIO			;
+
+		SLEEP
+		END
