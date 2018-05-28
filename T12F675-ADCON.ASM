@@ -1,11 +1,11 @@
 ;	2018/05/21
-;	A/D •ÏŠ·A“dˆ³‚Ì’l‚ÅLED‚ð“_“”‚·‚é
+;	A/D å¤‰æ›ã€é›»åœ§ã®å€¤ã§LEDã‚’ç‚¹ç¯ã™ã‚‹
 
 ;---------
 		LIST		P=12F675
 		INCLUDE		P12F675.INC
 ;---------
-;	CONFIG 		Ý’è
+;	CONFIG 		è¨­å®š
 		CB		=	_CPD_OFF
 		CB		&=	_CP_OFF
 		CB		&=	_BODEN_ON
@@ -39,9 +39,9 @@ H04
 			
 ;----------
 INIT
-		BSF			STATUS,RP0		;BANK1 ‘I‘ð
-		CALL		H'3FF'			;Zy“à•”U?Ší
-		MOVWF		OSCCAL			;Zy“à•”U?Ší
+		BSF			STATUS,RP0		;BANK1 é¸æŠž
+		CALL		H'3FF'			;æ ¡å‡†å†…éƒ¨æŒ¯?å™¨
+		MOVWF		OSCCAL			;æ ¡å‡†å†…éƒ¨æŒ¯?å™¨
 
 		MOVLW		B'00010000'		;Input Port GPIO,3 AN3
 		MOVWF		TRISIO			;
@@ -64,8 +64,8 @@ TEST
 
 ;--------end
 EEND
-		MOVLW		B'00000000'		;‚·‚×‚Ä‚Ìo—Íƒ{[ƒh‚ðƒNƒŠƒA
-		MOVWF		GPIO			;‚·‚×‚Ä‚Ìo—Íƒ{[ƒh‚ðƒNƒŠƒA
+		MOVLW		B'00000000'		;ã™ã¹ã¦ã®å‡ºåŠ›ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
+		MOVWF		GPIO			;ã™ã¹ã¦ã®å‡ºåŠ›ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
 		SLEEP
 		GOTO		EEND			;
 
@@ -155,7 +155,7 @@ EEPROM
 		MOVWF		EECON2			;
 		BSF			EECON1,WR		;
 		BSF			INTCON,GIE		;
-		BTFSS		EECON1,WR		;
+		BTFSC		EECON1,WR		;
 		GOTO		$ - 1			;
 		BCF			EECON1,WREN		;
 		BCF			STATUS,RP0		;
@@ -177,7 +177,7 @@ EEPROML
 		MOVWF		EECON2			;
 		BSF			EECON1,WR		;
 		BSF			INTCON,GIE		;
-		BTFSS		EECON1,WR		;
+		BTFSC		EECON1,WR		;
 		GOTO		$ - 1			;
 		BCF			EECON1,WREN		;
 		BCF			STATUS,RP0		;
@@ -186,20 +186,20 @@ EEPROML
 
 
 ;--------Timer
-; 4MHZ “à•”ƒNƒƒbƒN
-; 25KHz ì¬
+; 4MHZ å†…éƒ¨ã‚¯ãƒ­ãƒƒã‚¯
+; 25KHz ä½œæˆ
 ; 25KHz = 40us
 ; 4Mhz/4  = 1us 
-; 25KH‚š T = 40 ƒTƒCƒNƒ‹				
+; 25KHï½š T = 40 ã‚µã‚¤ã‚¯ãƒ«				
 
-TIMER1		MOVLW		D'25'			;D'25' 0.1ƒ~ƒŠ•b
+TIMER1		MOVLW		D'25'			;D'25' 0.1ãƒŸãƒªç§’
 			MOVWF		CNT1			;
 LOOP1		NOP							;
 			DECFSZ		CNT1,1			;
 			GOTO		LOOP1			;
 			RETURN						;
 
-T5			MOVLW		D'4'			;D'5' -> 0.5ƒ~ƒŠ•b
+T5			MOVLW		D'4'			;D'5' -> 0.5ãƒŸãƒªç§’
 			MOVWF		CNT5
 LOOPT5		NOP							;
 			CALL		TIMER1			;
@@ -208,7 +208,7 @@ LOOPT5		NOP							;
 			RETURN						;
 
 
-TIMER2		MOVLW		D'100'			;D'100' -> 10ƒ~ƒŠ•b D'50' -> 5ƒ~ƒŠ•b
+TIMER2		MOVLW		D'100'			;D'100' -> 10ãƒŸãƒªç§’ D'50' -> 5ãƒŸãƒªç§’
 			MOVWF		CNT2
 LOOP2		NOP							;
 			CALL		TIMER1			;
@@ -216,7 +216,7 @@ LOOP2		NOP							;
 			GOTO		LOOP2			;
 			RETURN						;
 		
-TIMER3		MOVLW		D'50'			;1/2•b
+TIMER3		MOVLW		D'50'			;1/2ç§’
 			MOVWF		CNT3			;
 LOOP3		NOP							;
 			CALL		TIMER2			;
@@ -224,7 +224,7 @@ LOOP3		NOP							;
 			GOTO		LOOP3			;
 			RETURN						;
 
-TIMER4		MOVLW		D'10'			;10•b
+TIMER4		MOVLW		D'10'			;10ç§’
 			MOVWF		CNT4			;
 LOOP4		NOP							;
 			CALL		TIMER3			;
