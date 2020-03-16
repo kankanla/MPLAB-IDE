@@ -1,0 +1,243 @@
+Disassembly Listing for 12F1822
+Generated From:
+C:/Users/kankanla/Desktop/PIC/12F1822/12F1822.X/dist/default/debug/12F1822.X.debug.elf
+2020/03/16 12:21:15
+
+---  C:/Users/kankanla/Desktop/PIC/12F1822/12F1822.X/main.c  --------------------------------------------
+1:             //*
+2:             // * File:   main.c
+3:             // * PIC 12F1822
+4:             // * 32 MHz 
+5:             // * 0.03125us
+6:             // * Created on 2020/03/06, 23:25
+7:             // */
+8:             
+9:             // CONFIG1
+10:            #pragma config FOSC = INTOSC    // Oscillator Selection (INTOSC oscillator: I/O function on CLKIN pin)
+11:            #pragma config WDTE = OFF       // Watchdog Timer Enable (WDT disabled)
+12:            #pragma config PWRTE = ON       // Power-up Timer Enable (PWRT enabled)
+13:            
+14:             
+15:            
+16:            #pragma config MCLRE = ON      // MCLR Pin Function Select (MCLR/VPP pin function is digital input)
+17:            #pragma config CP = OFF         // Flash Program Memory Code Protection (Program memory code protection is disabled)
+18:            #pragma config CPD = OFF        // Data Memory Code Protection (Data memory code protection is disabled)
+19:            #pragma config BOREN = ON       // Brown-out Reset Enable (Brown-out Reset enabled)
+20:            #pragma config CLKOUTEN = OFF   // Clock Out Enable (CLKOUT function is disabled. I/O or oscillator function on the CLKOUT pin)
+21:            #pragma config IESO = OFF       // Internal/External Switchover (Internal/External Switchover mode is disabled)
+22:            #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable (Fail-Safe Clock Monitor is disabled)
+23:            
+24:            // CONFIG2
+25:            #pragma config WRT = OFF        // Flash Memory Self-Write Protection (Write protection off)
+26:            #pragma config PLLEN = OFF      // PLL Enable (4x PLL disabled)
+27:            #pragma config STVREN = ON      // Stack Overflow/Underflow Reset Enable (Stack Overflow or Underflow will cause a Reset)
+28:            #pragma config BORV = HI        // Brown-out Reset Voltage Selection (Brown-out Reset Voltage (Vbor), high trip point selected.)
+29:            #pragma config LVP = OFF        // Low-Voltage Programming Enable (High-voltage on MCLR/VPP must be used for programming)
+30:            
+31:            #include <xc.h>
+32:            #include<stdio.h>
+33:            #define _XTAL_FREQ 32000000
+34:            __EEPROM_DATA('t', 'b', 2, 3, 4, 5, 6, 7);
+35:            
+36:            void SET_INIT();
+37:            void TMR1_INIT();
+38:            void T0(void);
+39:            void T1(void);
+40:            void EEPROMWRITE(unsigned char adr, unsigned char data);
+41:            unsigned char EEPROMREAD(unsigned char addr);
+42:            
+43:            void interrupt T1_isr(void) {
+0004  147E     BSF 0x7E, 0x0
+0005  3180     MOVLP 0x0
+44:                //TMR1H = 255; //40
+45:                //TMR1L = 160; //40
+46:                //TMR1H = 255; //20
+47:                //TMR1L = 239; //20
+48:                if (TMR1IF == 1) {
+0006  0020     MOVLB 0x0
+0007  1C11     BTFSS PIR1, 0x0
+0008  280A     GOTO 0xA
+0009  280B     GOTO 0xB
+000A  281B     GOTO 0x1B
+49:                    PORTAbits.RA2 = ~PORTAbits.RA2;
+000B  1003     BCF STATUS, 0x0
+000C  1D0C     BTFSS PORTA, 0x2
+000D  1403     BSF STATUS, 0x0
+000E  1803     BTFSC STATUS, 0x0
+000F  2811     GOTO 0x11
+0010  2814     GOTO 0x14
+0011  0020     MOVLB 0x0
+0012  150C     BSF PORTA, 0x2
+0013  2816     GOTO 0x16
+0014  0020     MOVLB 0x0
+0015  110C     BCF PORTA, 0x2
+50:                    TMR1H = 255;
+0016  30FF     MOVLW 0xFF
+0017  0097     MOVWF TMR1H
+51:                    TMR1L = 254; //240
+0018  30FE     MOVLW 0xFE
+0019  0096     MOVWF TMR1
+52:                    TMR1IF = 0;
+001A  1011     BCF PIR1, 0x0
+53:                }
+54:            }
+001B  107E     BCF 0x7E, 0x0
+001C  0009     RETFIE
+55:            
+56:            void main(void) {
+57:                SET_INIT();
+0021  3180     MOVLP 0x0
+0022  2043     CALL 0x43
+0023  3180     MOVLP 0x0
+58:                TMR1_INIT();
+0024  3180     MOVLP 0x0
+0025  205A     CALL 0x5A
+0026  3180     MOVLP 0x0
+59:                __delay_ms(1);
+0027  300B     MOVLW 0xB
+0028  00F0     MOVWF __pcstackCOMMON
+0029  3062     MOVLW 0x62
+002A  0B89     DECFSZ WREG, F
+002B  282A     GOTO 0x2A
+002C  0BF0     DECFSZ __pcstackCOMMON, F
+002D  282A     GOTO 0x2A
+002E  3200     BRA 0x2F
+60:                PORTAbits.RA2 = 0;
+002F  0020     MOVLB 0x0
+0030  110C     BCF PORTA, 0x2
+61:                TMR1H = 255;
+0031  30FF     MOVLW 0xFF
+0032  0097     MOVWF TMR1H
+62:                TMR1L = 240;
+0033  30F0     MOVLW 0xF0
+0034  0096     MOVWF TMR1
+63:                T1GCONbits.TMR1GE = 1;
+0035  1799     BSF T1GCON, 0x7
+64:                PIE1bits.TMR1IE = 1;
+0036  0021     MOVLB 0x1
+0037  1411     BSF PIE1, 0x0
+65:            
+66:                while (1) {
+67:                    NOP();
+0038  0000     NOP
+68:                    NOP();
+0039  0000     NOP
+69:                    NOP();
+003A  0000     NOP
+70:                    NOP();
+003B  0000     NOP
+71:                    NOP();
+003C  0000     NOP
+72:                    NOP();
+003D  0000     NOP
+73:                    NOP();
+003E  0000     NOP
+74:                    NOP();
+003F  0000     NOP
+75:                    NOP();
+0040  0000     NOP
+0041  2838     GOTO 0x38
+0042  281D     GOTO 0x1D
+76:                }
+77:            }
+78:            
+79:            void T0(void) {
+80:                PORTAbits.RA2 = 1;
+81:                PORTAbits.RA2 = 0;
+82:                return;
+83:            }
+84:            
+85:            void T1(void) {
+86:                PORTAbits.RA2 = 1;
+87:                PORTAbits.RA2 = 0;
+88:                return;
+89:            }
+90:            
+91:            void TMR1_INIT() {
+92:                T1CONbits.TMR1CS = 1;
+005A  0020     MOVLB 0x0
+005B  0818     MOVF T1CON, W
+005C  393F     ANDLW 0x3F
+005D  3840     IORLW 0x40
+005E  0098     MOVWF T1CON
+93:                T1CONbits.TMR1ON = 1;
+005F  1418     BSF T1CON, 0x0
+94:                //    T1GCONbits.TMR1GE = 1;
+95:                //    PIE1bits.TMR1IE = 1;
+96:                return;
+97:            }
+0060  0008     RETURN
+98:            
+99:            void SET_INIT() {
+100:               OSCCONbits.SPLLEN = 1; //4xPPL ??
+0043  0021     MOVLB 0x1
+0044  1799     BSF OSCCON, 0x7
+101:               OSCCONbits.IRCF3 = 1;
+0045  1719     BSF OSCCON, 0x6
+102:               OSCCONbits.IRCF2 = 1;
+0046  1699     BSF OSCCON, 0x5
+103:               OSCCONbits.IRCF1 = 1;
+0047  1619     BSF OSCCON, 0x4
+104:               OSCCONbits.IRCF0 = 0;
+0048  1199     BCF OSCCON, 0x3
+105:               OSCCONbits.SCS1 = 1;
+0049  1499     BSF OSCCON, 0x1
+106:               OSCCONbits.SCS0 = 0;
+004A  1019     BCF OSCCON, 0x0
+107:               ANSELAbits.ANSA4 = 0;
+004B  0023     MOVLB 0x3
+004C  120C     BCF ANSELA, 0x4
+108:               ANSELAbits.ANSA2 = 0;
+004D  110C     BCF ANSELA, 0x2
+109:               ANSELAbits.ANSA1 = 0;
+004E  108C     BCF ANSELA, 0x1
+110:               ANSELAbits.ANSA0 = 0;
+004F  100C     BCF ANSELA, 0x0
+111:               TRISAbits.TRISA0 = 0;
+0050  0021     MOVLB 0x1
+0051  100C     BCF TRISA, 0x0
+112:               TRISAbits.TRISA1 = 0;
+0052  108C     BCF TRISA, 0x1
+113:               TRISAbits.TRISA2 = 0;
+0053  110C     BCF TRISA, 0x2
+114:               TRISAbits.TRISA3 = 1;
+0054  158C     BSF TRISA, 0x3
+115:               TRISAbits.TRISA4 = 0;
+0055  120C     BCF TRISA, 0x4
+116:               TRISAbits.TRISA5 = 0;
+0056  128C     BCF TRISA, 0x5
+117:               INTCONbits.PEIE = 1;
+0057  170B     BSF INTCON, 0x6
+118:               INTCONbits.GIE = 1;
+0058  178B     BSF INTCON, 0x7
+119:               return;
+120:           }
+0059  0008     RETURN
+121:           
+122:           void EEPROMWRITE(unsigned char add, unsigned char data) {
+123:               EEADRLbits.EEADRL = add;
+124:               EEDATLbits.EEDATL = data;
+125:               EECON1bits.CFGS = 0;
+126:               EECON1bits.EEPGD = 0;
+127:               EECON1bits.WREN = 1;
+128:               INTCONbits.GIE = 0;
+129:               EECON2bits.EECON2 = 0x55;
+130:               EECON2bits.EECON2 = 0xaa;
+131:               EECON1bits.WR = 1;
+132:               while (EECON1bits.WR == 1);
+133:               INTCONbits.GIE = 1;
+134:               EECON1bits.WREN = 0;
+135:               return;
+136:           }
+137:           
+138:           unsigned char EEPROMREAD(unsigned char addr) {
+139:               EEADRL = addr;
+140:               INTCONbits.GIE = 0;
+141:               EECON1bits.RD = 1;
+142:               while (EECON1bits.RD == 1);
+143:               return EEDATA;
+144:           }
+---  C:/Users/kankanla/AppData/Local/Temp/s5ts.s  -------------------------------------------------------
+001E  107E     BCF 0xFE, 0x0
+001F  0020     MOVLB 0x0
+0020  2821     GOTO 0x21
