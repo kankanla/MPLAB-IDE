@@ -1,11 +1,12 @@
 ;----
-;Amazon çwì¸ÇµÇΩÉTÅ[É{Å[ÇÃìÆçÏÉvÉçÉOÉâÉÄ
-;Miuzei ÉTÅ[É{ÉÇÅ[É^Å[ É}ÉCÉNÉçÉTÅ[É{ 9g 10å¬ÉZÉbÉg ÉfÉWÉ^ÉãÅEÉTÅ[É{ (10å¬ÉZÉbÉg)
-;newServo	2019/12/22
-;GPIO5,4	Servo ÉpÉãÉXèoóÕ
-;GPIO 0,1	;+ -,1  ÉpÉãÉXí≤êÆ
-;GPIO 2		;GPIO 0,1 ê›íËÇµÇΩÉpÉãÉX(äpìx)ÇEEPROMÇ…ï€ë∂Ç∑ÇÈÅB
-;GPIO 3		;EEPROMï€ë∂ÇµÇΩÉpÉãÉX(äpìx)Çé¿çs
+;Amazon Ë≥ºÂÖ•„Åó„Åü„Çµ„Éº„Éú„Éº„ÅÆÂãï‰Ωú„Éó„É≠„Ç∞„É©„É†
+;Miuzei „Çµ„Éº„Éú„É¢„Éº„Çø„Éº „Éû„Ç§„ÇØ„É≠„Çµ„Éº„Éú 9g 10ÂÄã„Çª„ÉÉ„Éà „Éá„Ç∏„Çø„É´„Éª„Çµ„Éº„Éú (10ÂÄã„Çª„ÉÉ„Éà)
+;newServo	ver2019/12/22  ver2020/03/30
+;GPIO5		InputPIN  HIGTH (LM393 IRËµ§Â§ñÁ∑öÈöúÂÆ≥Áâ©ÂõûÈÅø„Çª„É≥„Çµ„É¢„Ç∏„É•„Éº„É´)
+;GPIO4		Servo „Éë„É´„ÇπÂá∫Âäõ
+;GPIO 0,1	;+ -,1  „Éë„É´„ÇπË™øÊï¥
+;GPIO 2		;GPIO 0,1 Ë®≠ÂÆö„Åó„Åü„Éë„É´„Çπ(ËßíÂ∫¶)„ÇíEEPROM„Å´‰øùÂ≠ò„Åô„Çã„ÄÇ
+;GPIO 3		;EEPROM‰øùÂ≠ò„Åó„Åü„Éë„É´„Çπ(ËßíÂ∫¶)„ÇíÂÆüË°å
 
 
 		LIST		P=12F675
@@ -23,55 +24,54 @@
 
 ;---
 		CBLOCK		H'20'
-		CNT1						;É^ÉCÉ}ÉJÉEÉìÉ^Å[
+		CNT1						;„Çø„Ç§„Éû„Ç´„Ç¶„É≥„Çø„Éº
 		CNT2						;
 		CNT3						;
 		CNT4						;
-		BASE_TMR0					;ÉpÉãÉXÉTÉCÉNÉãäÓñ{É^ÉCÉ}Å[íËêî D'174'
-		HIGH_PULSE					;ÉpÉãÉX
-		HIGH_PULSE_CNT				;ÉpÉãÉXGPIOHIGHÉJÉEÉìÉ^Å[íËêî
-		HIGH_PULSE_MAX				;ç≈ëÂÉpÉãÉXíËêî(ÉTÅ[É{Å[ÇÃç≈ëÂíl)D'248'
-		HIGH_PULSE_MIN				;ç≈è¨ÉpÉãÉXíËêî(ÉTÅ[É{Å[ÇÃç≈è¨íl)D'55'
-		HIGH_PULSE_MAX_SET			;ê›íËç≈ëÂÉpÉãÉX
-		HIGH_PULSE_MIN_SET			;ê›íËç≈èâÉpÉãÉX
-		HIGH_PULSE_MAX_EEPROM		;EEPROMç≈ëÂÉpÉãÉXì«Ç›éÊÇËå„ï€ë∂êÊ
-		HIGH_PULSE_MIN_EEPROM		;EEPROMç≈è¨ÉpÉãÉXì«Ç›éÊÇËå„ï€ë∂êÊ
-		HIGH_PULSE_SPEED			;ÉpÉãÉXê›íËéûÇÃÉTÅ[É{Å[ÇÃâÒì]ë¨ìxíËêî D'40'
-		HIGH_PULSE_SPEED_CNT		;ÉpÉãÉXê›íËéûÇÃÉTÅ[É{Å[ÇÃâÒì]ë¨ìxÇÃÉJÉEÉìÉ^Å[
-		H04_WTEMP					;äÑÇËçûÇ› W àÍéûï€ë∂êÊ
-		KEY_CHK_CNT					;GPIO High ÇÃÉJÉEÉìÉgíËêî D'240'
-		KEY_CHK_CNT_CNT				;GPIO High ÉJÉEÉìÉ^Å[
-		EEPROM_ADDR					;EEPROMèëÇ´çûÇ›ÉAÉhÉåÉX
-		EEPROM_DATA					;EEPROMèëÇ´çûÇ›ÅAì«Ç›çûÇ›ÉfÅ[É^
+		BASE_TMR0					;„Éë„É´„Çπ„Çµ„Ç§„ÇØ„É´Âü∫Êú¨„Çø„Ç§„Éû„ÉºÂÆöÊï∞ D'174'
+		HIGH_PULSE					;„Éë„É´„Çπ
+		HIGH_PULSE_CNT					;„Éë„É´„ÇπGPIOHIGH„Ç´„Ç¶„É≥„Çø„ÉºÂÆöÊï∞
+		HIGH_PULSE_MAX					;ÊúÄÂ§ß„Éë„É´„ÇπÂÆöÊï∞(„Çµ„Éº„Éú„Éº„ÅÆÊúÄÂ§ßÂÄ§)D'248'
+		HIGH_PULSE_MIN					;ÊúÄÂ∞è„Éë„É´„ÇπÂÆöÊï∞(„Çµ„Éº„Éú„Éº„ÅÆÊúÄÂ∞èÂÄ§)D'55'
+		HIGH_PULSE_MAX_SET				;Ë®≠ÂÆöÊúÄÂ§ß„Éë„É´„Çπ
+		HIGH_PULSE_MIN_SET				;Ë®≠ÂÆöÊúÄÂàù„Éë„É´„Çπ
+		HIGH_PULSE_MAX_EEPROM				;EEPROMÊúÄÂ§ß„Éë„É´„ÇπË™≠„ÅøÂèñ„ÇäÂæå‰øùÂ≠òÂÖà
+		HIGH_PULSE_MIN_EEPROM				;EEPROMÊúÄÂ∞è„Éë„É´„ÇπË™≠„ÅøÂèñ„ÇäÂæå‰øùÂ≠òÂÖà
+		HIGH_PULSE_SPEED				;„Éë„É´„ÇπË®≠ÂÆöÊôÇ„ÅÆ„Çµ„Éº„Éú„Éº„ÅÆÂõûËª¢ÈÄüÂ∫¶ÂÆöÊï∞ D'40'
+		HIGH_PULSE_SPEED_CNT				;„Éë„É´„ÇπË®≠ÂÆöÊôÇ„ÅÆ„Çµ„Éº„Éú„Éº„ÅÆÂõûËª¢ÈÄüÂ∫¶„ÅÆ„Ç´„Ç¶„É≥„Çø„Éº
+		H04_WTEMP					;Ââ≤„ÇäËæº„Åø W ‰∏ÄÊôÇ‰øùÂ≠òÂÖà
+		KEY_CHK_CNT					;GPIO High „ÅÆ„Ç´„Ç¶„É≥„ÉàÂÆöÊï∞ D'240'
+		KEY_CHK_CNT_CNT					;GPIO High „Ç´„Ç¶„É≥„Çø„Éº
+		EEPROM_ADDR					;EEPROMÊõ∏„ÅçËæº„Åø„Ç¢„Éâ„É¨„Çπ
+		EEPROM_DATA					;EEPROMÊõ∏„ÅçËæº„Åø„ÄÅË™≠„ÅøËæº„Åø„Éá„Éº„Çø
 		ENDC
 
 ;---
 		org	0x2110;
 		de "12F629.BLOGSPOT.COM"
-		ORG			0
+		ORG		0
 		GOTO		INIT
-		ORG			4
+		ORG		4
 		GOTO		H04
 ;---
-H04									;äÑÇËçûÇ›
-		MOVWF		H04_WTEMP		;W àÍéûìIÇ…ï€ë∂
-		BCF			INTCON,GIE		;Ç∑Ç◊ÇƒÇÃäÑÇËçûÇ›ã÷é~
-		BTFSC		INTCON,T0IF		;É^ÉCÉ}Å[äÑÇËçûÇ› 1 ÇÃèÍçá
-		GOTO		H04_T0IE		;É^ÉCÉ}Å[äÑÇËçûÇ› 1 ÇÃèÍçá GOTO 
-		BTFSC		INTCON,INTF		;GPIO2ÇÃäOïîäÑÇËçûÇ› 1 ÇÃèÍçá
-		GOTO		H04_INTE		;GPIO2ÇÃäOïîäÑÇËçûÇ› 1 ÇÃèÍçá GOTO 
-		GOTO		H04_RETFIE		;äÑÇËçûÇ›èIóπ
+H04								;Ââ≤„ÇäËæº„Åø
+		MOVWF		H04_WTEMP			;W ‰∏ÄÊôÇÁöÑ„Å´‰øùÂ≠ò
+		BCF		INTCON,GIE			;„Åô„Åπ„Å¶„ÅÆÂâ≤„ÇäËæº„ÅøÁ¶ÅÊ≠¢
+		BTFSC		INTCON,T0IF			;„Çø„Ç§„Éû„ÉºÂâ≤„ÇäËæº„Åø 1 „ÅÆÂ†¥Âêà
+		GOTO		H04_T0IE			;„Çø„Ç§„Éû„ÉºÂâ≤„ÇäËæº„Åø 1 „ÅÆÂ†¥Âêà GOTO 
+		BTFSC		INTCON,INTF			;GPIO2„ÅÆÂ§ñÈÉ®Ââ≤„ÇäËæº„Åø 1 „ÅÆÂ†¥Âêà
+		GOTO		H04_INTE			;GPIO2„ÅÆÂ§ñÈÉ®Ââ≤„ÇäËæº„Åø 1 „ÅÆÂ†¥Âêà GOTO 
+		GOTO		H04_RETFIE			;Ââ≤„ÇäËæº„ÅøÁµÇ‰∫Ü
 		
-H04_INTE	;GP2/INT				;ñ¢égóp
-		BCF			INTCON,INTF
+H04_INTE	;GP2/INT					;Êú™‰ΩøÁî®
+		BCF		INTCON,INTF
 		GOTO		H04_RETFIE
 
 H04_T0IE	;Timer0
 		MOVF		BASE_TMR0,w
 		MOVWF		TMR0
-		BSF			GPIO,4			;GPIO4 =1
-		BSF			GPIO,5			;GPIO5 =1
-		BCF			INTCON,T0IF
+		BSF		GPIO,4				;GPIO4 =1
+		BCF		INTCON,T0IF
 		MOVF		HIGH_PULSE,w
 		MOVWF		HIGH_PULSE_CNT
 		NOP
@@ -82,33 +82,32 @@ H04_T0IE	;Timer0
 		NOP
 		DECFSZ		HIGH_PULSE_CNT,f
 		GOTO		$-7
-		BCF			GPIO,4			;GPIO4 =0
-		BCF			GPIO,5			;GPIO5 =0
+		BCF		GPIO,4				;GPIO4 =0
 		GOTO		H04_RETFIE
 
 H04_RETFIE
-		BCF			INTCON,T0IF
-		BCF			INTCON,INTF
-		BSF			INTCON,GIE
+		BCF		INTCON,T0IF
+		BCF		INTCON,INTF
+		BSF		INTCON,GIE
 		MOVF		H04_WTEMP,w
 		RETFIE
 
 ;---
 INIT
-		BSF			STATUS,RP0
+		BSF		STATUS,RP0
 		CALL		H'3FF'
 		MOVWF		OSCCAL
 		CLRF		ANSEL
-		MOVLW		B'00001111'
+		MOVLW		B'00101111'
 		MOVWF		TRISIO
 
-		BCF			OPTION_REG,T0CS
-		BCF			OPTION_REG,PSA
-		BSF			OPTION_REG,PS2
-		BSF			OPTION_REG,PS1
-		BSF			OPTION_REG,PS0
+		BCF		OPTION_REG,T0CS
+		BCF		OPTION_REG,PSA
+		BSF		OPTION_REG,PS2
+		BSF		OPTION_REG,PS1
+		BSF		OPTION_REG,PS0
 
-		BCF			STATUS,RP0
+		BCF		STATUS,RP0
 		MOVLW		B'00000111'
 		MOVWF		CMCON
 		CALL		TIMER2
@@ -136,10 +135,10 @@ INIT
 		MOVLW		D'40'
 		MOVWF		HIGH_PULSE_SPEED
 		
-		BCF			INTCON,INTE
-		BSF			INTCON,T0IE
-		BCF			INTCON,T0IF	
-		BSF			INTCON,GIE
+		BCF		INTCON,INTE
+		BSF		INTCON,T0IE
+		BCF		INTCON,T0IF	
+		BSF		INTCON,GIE
 		CLRF		GPIO;
 
 ;---
@@ -152,11 +151,13 @@ MAIN_LOOP
 		CALL		KEY_CHK_P1
 		BTFSC		GPIO,2
 		CALL		SERVO_SAVE
-		BTFSC		GPIO,3					;é¿çsêMçÜ
+		BTFSC		GPIO,3				;ÂÆüË°å‰ø°Âè∑
+		CALL		SERVO_ONESTEP_EEPROM
+		BTFSS		GPIO,5				;ÂÆüË°å‰ø°Âè∑
 		CALL		SERVO_ONESTEP_EEPROM
 		GOTO		MAIN_LOOP
 
-KEY_CHK_P0									;GPIO,0
+KEY_CHK_P0							;GPIO,0
 		MOVF		KEY_CHK_CNT,w
 		MOVWF		KEY_CHK_CNT_CNT
 		BTFSS		GPIO,0
@@ -164,19 +165,19 @@ KEY_CHK_P0									;GPIO,0
 		DECFSZ		KEY_CHK_CNT_CNT,f
 		GOTO		$-3;
 		
-		CALL		SET_HIGH_PULSE_SPEED	;ä‘äuéûä‘(ÉXÉsÅ[Ég)
+		CALL		SET_HIGH_PULSE_SPEED		;ÈñìÈöîÊôÇÈñì(„Çπ„Éî„Éº„Éà)
 		INCF		HIGH_PULSE,f			;+1
 		MOVF		HIGH_PULSE_MAX,w
-		SUBWF		HIGH_PULSE,w			;HIGH_PULSE - HIGH_PULSE_MAX ëÂè¨î‰är > 0  C=1
-		BTFSS		STATUS,C				;BTFSS STATUS,C
-		GOTO		$+3						;C=0
+		SUBWF		HIGH_PULSE,w			;HIGH_PULSE - HIGH_PULSE_MAX Â§ßÂ∞èÊØîËºÉ > 0  C=1
+		BTFSS		STATUS,C			;BTFSS STATUS,C
+		GOTO		$+3				;C=0
 		MOVF		HIGH_PULSE_MAX,w		;C=1
 		MOVWF		HIGH_PULSE
 		MOVF		HIGH_PULSE,w
 		MOVWF		HIGH_PULSE_MAX_SET
 		RETURN
 		
-KEY_CHK_P1									;GPIO,1
+KEY_CHK_P1							;GPIO,1
 		MOVF		KEY_CHK_CNT,w
 		MOVWF		KEY_CHK_CNT_CNT
 		BTFSS		GPIO,1
@@ -184,12 +185,12 @@ KEY_CHK_P1									;GPIO,1
 		DECFSZ		KEY_CHK_CNT_CNT,f
 		GOTO		$-3;
 
-		CALL		SET_HIGH_PULSE_SPEED	;ä‘äuéûä‘(ÉXÉsÅ[Ég)
+		CALL		SET_HIGH_PULSE_SPEED		;ÈñìÈöîÊôÇÈñì(„Çπ„Éî„Éº„Éà)
 		DECF		HIGH_PULSE,f			;-1
 		MOVF		HIGH_PULSE_MIN,w
-		SUBWF		HIGH_PULSE,w			;HIGH_PULSE - HIGH_PULSE_MIN ëÂè¨î‰är < 0 ïâ C=0
-		BTFSC		STATUS,C				;BTFSC STATUS,C
-		GOTO		$+3						;C=1
+		SUBWF		HIGH_PULSE,w			;HIGH_PULSE - HIGH_PULSE_MIN Â§ßÂ∞èÊØîËºÉ < 0 Ë≤† C=0
+		BTFSC		STATUS,C			;BTFSC STATUS,C
+		GOTO		$+3				;C=1
 		MOVF		HIGH_PULSE_MIN,w		;C=0
 		MOVWF		HIGH_PULSE
 		MOVF		HIGH_PULSE,w
@@ -202,36 +203,36 @@ MAIN_END
 ;---
 ;		EEPROM_ADDR					;
 ;		EEPROM_DATA					;
-EEPROM								;EEPROM ÉtÉ@ÉìÉNÉVÉáÉì
-EEPROM_WREN							;EEPROM èëÇ´çûÇ›
-		BCF			INTCON,GIE
-		BSF			STATUS,RP0		;ÉoÉìÉN1Ç…êÿÇËë÷Ç¶
+EEPROM								;EEPROM „Éï„Ç°„É≥„ÇØ„Ç∑„Éß„É≥
+EEPROM_WREN							;EEPROM Êõ∏„ÅçËæº„Åø
+		BCF		INTCON,GIE
+		BSF		STATUS,RP0			;„Éê„É≥„ÇØ1„Å´Âàá„ÇäÊõø„Åà
 		MOVF		EEPROM_ADDR,w
 		MOVWF		EEADR
-		MOVF		EEPROM_DATA,w	;èëÇ´çûÇ›ÉfÅ[É^
+		MOVF		EEPROM_DATA,w			;Êõ∏„ÅçËæº„Åø„Éá„Éº„Çø
 		MOVWF		EEDATA
-		BSF			EECON1,WREN		;èëÇ´çûÇ›ãñâ¬
-		MOVLW		0X55			;èëÇ´çûÇ›éËèá
+		BSF		EECON1,WREN			;Êõ∏„ÅçËæº„ÅøË®±ÂèØ
+		MOVLW		0X55				;Êõ∏„ÅçËæº„ÅøÊâãÈ†Ü
 		MOVWF		EECON2
 		MOVLW		0XAA
 		MOVWF		EECON2
-		BSF			EECON1,WR		;èëÇ´çûÇ›;èëÇ´çûÇ›äÆóπÇÃÉ`ÉFÉbÉN
+		BSF		EECON1,WR			;Êõ∏„ÅçËæº„Åø;Êõ∏„ÅçËæº„ÅøÂÆå‰∫Ü„ÅÆ„ÉÅ„Çß„ÉÉ„ÇØ
 		BTFSC		EECON1,WR
 		GOTO		$-1
-		BCF			STATUS,RP0		;èëÇ´çûÇ›äÆóπå„ÅAÉoÉCÉN0Ç…ñﬂÇÈ
-		BSF			INTCON,GIE
+		BCF		STATUS,RP0			;Êõ∏„ÅçËæº„ÅøÂÆå‰∫ÜÂæå„ÄÅ„Éê„Ç§„ÇØ0„Å´Êàª„Çã
+		BSF		INTCON,GIE
 		RETURN
 
-EEPROM_DR							;EEPROM ì«Ç›çûÇ›
-		BCF			INTCON,GIE
-		BSF			STATUS,RP0
+EEPROM_DR							;EEPROM Ë™≠„ÅøËæº„Åø
+		BCF		INTCON,GIE
+		BSF		STATUS,RP0
 		MOVF		EEPROM_ADDR,w
 		MOVWF		EEADR
-		BSF			EECON1,RD
+		BSF		EECON1,RD
 		MOVF		EEDATA,w
 		MOVWF		EEPROM_DATA	
-		BCF			STATUS,RP0
-		BSF			INTCON,GIE
+		BCF		STATUS,RP0
+		BSF		INTCON,GIE
 		RETURN
 		
 ;---
@@ -255,42 +256,44 @@ SERVO_SAVE
 		
 ;---
 SERVO_ONESTEP_EEPROM						;
-		MOVF		KEY_CHK_CNT,w			;ÉLÅ[ÉJÉEÉìÉgÉ`ÉFÉbÉNÅAÉmÉCÉYÇÃëŒèàï˚ñ@
+		MOVF		KEY_CHK_CNT,w			;„Ç≠„Éº„Ç´„Ç¶„É≥„Éà„ÉÅ„Çß„ÉÉ„ÇØ„ÄÅ„Éé„Ç§„Ç∫„ÅÆÂØæÂá¶ÊñπÊ≥ï
 		MOVWF		KEY_CHK_CNT_CNT
 		BTFSS		GPIO,3
+		BTFSC		GPIO,5
 		RETURN
 		DECFSZ		KEY_CHK_CNT_CNT,f
-		GOTO		$-3;
-SERVO_ONESTEP_EEPROM_CHK					;ÉpÉãÉXï€ë∂å„Ç…àÍâÒé¿çsÇ∑ÇÈ
-		MOVLW		H'00'					;MINI_EEPROM
-		MOVWF		EEPROM_ADDR				;EEPROMì«Ç›éÊÇËÉAÉhÉåÉX
-		CALL		EEPROM_DR				;EEPROMì«Ç›éÊÇËÉtÉ@ÉìÉNÉVÉáÉìÇ÷
-		MOVF		EEPROM_DATA,w			;EEPROMì«Ç›éÊÇËå„ÇÃÉfÅ[É^
-		MOVWF		HIGH_PULSE_MIN_EEPROM	;
+		GOTO		$-4;
+SERVO_ONESTEP_EEPROM_CHK					;„Éë„É´„Çπ‰øùÂ≠òÂæå„Å´‰∏ÄÂõûÂÆüË°å„Åô„Çã
+		MOVLW		H'00'				;MINI_EEPROM
+		MOVWF		EEPROM_ADDR			;EEPROMË™≠„ÅøÂèñ„Çä„Ç¢„Éâ„É¨„Çπ
+		CALL		EEPROM_DR			;EEPROMË™≠„ÅøÂèñ„Çä„Éï„Ç°„É≥„ÇØ„Ç∑„Éß„É≥„Å∏
+		MOVF		EEPROM_DATA,w			;EEPROMË™≠„ÅøÂèñ„ÇäÂæå„ÅÆ„Éá„Éº„Çø
+		MOVWF		HIGH_PULSE_MIN_EEPROM		;
 		
-		MOVLW		H'01'					;MAX_EEPROM
+		MOVLW		H'01'				;MAX_EEPROM
 		MOVWF		EEPROM_ADDR
 		CALL		EEPROM_DR
 		MOVF		EEPROM_DATA,w
 		MOVWF		HIGH_PULSE_MAX_EEPROM
 		
-		MOVF		HIGH_PULSE_MIN_EEPROM,w	;
-		MOVWF		HIGH_PULSE				;
+		MOVF		HIGH_PULSE_MIN_EEPROM,w		;
+		MOVWF		HIGH_PULSE			;
 		CALL		TIMER3
-		MOVF		HIGH_PULSE_MAX_EEPROM,w	;
-		MOVWF		HIGH_PULSE				;
+		MOVF		HIGH_PULSE_MAX_EEPROM,w		;
+		MOVWF		HIGH_PULSE			;
 		CALL		TIMER3
 		RETURN
 		
 ;---
-SERVO_ONESTEP_RUN							;ñ¢égóp
-		GOTO		$+7
+SERVO_ONESTEP_RUN						;Êú™‰ΩøÁî®
+		GOTO		$+8
 		MOVF		KEY_CHK_CNT,w
 		MOVWF		KEY_CHK_CNT_CNT
 		BTFSS		GPIO,3
+		BTFSC		GPIO,5
 		RETURN
 		DECFSZ		KEY_CHK_CNT_CNT,f
-		GOTO		$-3;
+		GOTO		$-4;
 
 		MOVF		HIGH_PULSE_MIN,w
 		MOVWF		HIGH_PULSE
@@ -301,7 +304,7 @@ SERVO_ONESTEP_RUN							;ñ¢égóp
 		RETURN
 
 ;---
-SERVO_TEST									;ñ¢égóp
+SERVO_TEST							;Êú™‰ΩøÁî®
 		MOVF		HIGH_PULSE_MAX,w
 		MOVWF		HIGH_PULSE
 		CALL		TIMER3
@@ -314,7 +317,7 @@ SERVO_TEST									;ñ¢égóp
 		RETURN
 
 ;---
-SET_HIGH_PULSE_SPEED						;ä‘äu(ÉXÉsÅ[Ég)
+SET_HIGH_PULSE_SPEED						;ÈñìÈöî(„Çπ„Éî„Éº„Éà)
 		MOVF		HIGH_PULSE_SPEED,w
 		MOVWF		HIGH_PULSE_SPEED_CNT		
 		CALL		TIMER1
@@ -322,7 +325,7 @@ SET_HIGH_PULSE_SPEED						;ä‘äu(ÉXÉsÅ[Ég)
 		GOTO		$-2
 		RETURN
 
-;---										;àÍî ópÉ^ÉCÉ}Å[
+;---								;‰∏ÄËà¨Áî®„Çø„Ç§„Éû„Éº
 TIMER1
 		MOVLW		D'25'
 		MOVWF		CNT1
@@ -361,4 +364,3 @@ TIMER4
 ;---
 PEND
 		END
-		
