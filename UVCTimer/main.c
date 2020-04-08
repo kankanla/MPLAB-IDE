@@ -34,7 +34,7 @@ asm("OSCCAL equ 090h");
 
 char TCONT = 0; //タイマ回数
 char CONT_TEMP = 0; //カウンターのTemp;
-char FLAG = 0; //現在の状態
+char FLAG = 1; //現在の状態
 
 void interrupt isr(void) {
     INTCONbits.GIE = 0;
@@ -56,7 +56,6 @@ void interrupt isr(void) {
     if (FLAG == 1) {
         if (PIR1bits.TMR1IF == 1) {
             NOP();
-
         }
     }
     INTCONbits.GIE = 1;
@@ -150,22 +149,23 @@ void Timer_1(char a) {
     T1CONbits.TMR1CS = 0;
     T1CONbits.TMR1ON = 1;
     GPIObits.GP4 = 0;
-    CONT_TEMP = 0;
-    for (char i = 0; i < 20; i++) {
+    for (char i = 0; i < 2; i++) {
         __delay_ms(1000);
     }
 
-    while (CONT_TEMP < 255) {
+    CONT_TEMP = 0;
+    while (CONT_TEMP < 10) {
+        NOP();
         while (TMR1H != 0) {
         }
+        TMR1H = 1;
         CONT_TEMP += 1;
     }
-
-    GPIObits.GP4 = 1;
-    NOP();
-    NOP();
+    CONT_TEMP = 0;
+    
+    
+    
     return;
-
 }
 
 void main(void) {
