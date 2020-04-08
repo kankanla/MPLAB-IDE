@@ -29,7 +29,7 @@
  */
 
 //OSCCAL = __osccal_val();
-//#define XTAL_FREQ 40000;
+#define _XTAL_FREQ 4000000
 asm("OSCCAL equ 090h");
 
 char TCONT = 0; //タイマ回数
@@ -37,8 +37,8 @@ char CONT_TEMP = 0; //カウンターのTemp;
 char FLAG = 0; //現在の状態
 
 void interrupt isr(void) {
+    INTCONbits.GIE = 0;
     if (FLAG == 0) {
-        INTCONbits.GIE = 0;
         if (INTCONbits.T0IF == 1) {
             INTCONbits.T0IE = 0;
             INTCONbits.T0IF = 0;
@@ -50,6 +50,13 @@ void interrupt isr(void) {
                 TMR0 = 1;
                 INTCONbits.T0IE = 1;
             }
+        }
+    }
+
+    if (FLAG == 1) {
+        if (PIR1bits.TMR1IF == 1) {
+            NOP();
+
         }
     }
     INTCONbits.GIE = 1;
@@ -124,13 +131,41 @@ void pinchk(void) {
             if (TCONT > 7) {
                 NOP();
             }
-
             while (GPIObits.GP3 == 1);
         }
         NOP();
     }
     NOP();
     return;
+}
+
+void Timer_1(char a) {
+    TMR1Lbits.TMR1L = 0;
+    TMR1Hbits.TMR1H = 1;
+    T1CONbits.TMR1GE = 0;
+    T1CONbits.T1CKPS1 = 1;
+    T1CONbits.T1CKPS0 = 1;
+    T1CONbits.T1OSCEN = 0;
+    T1CONbits.nT1SYNC = 1;
+    T1CONbits.TMR1CS = 0;
+    T1CONbits.TMR1ON = 1;
+    GPIObits.GP4 = 0;
+    CONT_TEMP = 0;
+    for (char i = 0; i < 20; i++) {
+        __delay_ms(1000);
+    }
+
+    while (CONT_TEMP < 255) {
+        while (TMR1H != 0) {
+        }
+        CONT_TEMP += 1;
+    }
+
+    GPIObits.GP4 = 1;
+    NOP();
+    NOP();
+    return;
+
 }
 
 void main(void) {
@@ -142,7 +177,7 @@ void main(void) {
                     pinchk();
                 break;
             case 1:
-                NOP();
+                Timer_1(3);
                 break;
             case 2:
                 break;
