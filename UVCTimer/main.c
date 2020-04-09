@@ -32,9 +32,15 @@
 //#define _XTAL_FREQ 4000000
 asm("OSCCAL equ 090h");
 
-char TCONT = 0; //タイマ回数
-int CONT_TEMP = 0; //カウンターのTemp;
+/*
+ * FLAG = 0 GP3  INPUT 時間設定できる
+ * FLAG = 1 時間設定後，タイマスタート猶予時間
+ * FLAG = 2 タイマ実行中
+ * FLAG = 3
+ */
 char FLAG = 1; //現在の状態
+char TCONT = 0; //タイマ回数/時間設定
+int CONT_TEMP = 0; //カウンターのTemp;
 
 void interrupt isr(void) {
     INTCONbits.GIE = 0;
@@ -52,11 +58,8 @@ void interrupt isr(void) {
             }
         }
     }
-
-    if (FLAG == 1) {
-
-    }
-
+    //    if (FLAG == 1) {
+    //    }
     if (FLAG == 2) {
         if (PIR1bits.TMR1IF == 1) {
             ++CONT_TEMP;
@@ -64,18 +67,23 @@ void interrupt isr(void) {
                 GPIObits.GP4 = 0;
                 FLAG = 0;
                 CONT_TEMP = 0;
+                TMR1Lbits.TMR1L = 0;
+                TMR1Hbits.TMR1H = 0;
+                PIR1bits.TMR1IF = 0;
                 PIE1bits.TMR1IE = 0;
             } else {
+                GPIObits.GP4 = 1;
+                FLAG = 2;
+                CONT_TEMP = CONT_TEMP;
                 TMR1Lbits.TMR1L = 0;
-                TMR1Hbits.TMR1H = 1;
+                TMR1Hbits.TMR1H = 0;
                 PIR1bits.TMR1IF = 0;
+                PIE1bits.TMR1IE = 1;
             }
         }
     }
-
-    if (FLAG == 3) {
-
-    }
+    //    if (FLAG == 3) {
+    //    }
     INTCONbits.GIE = 1;
 }
 
@@ -191,18 +199,28 @@ void Timer_1(char a) {
     return;
 }
 
+/*
+ * FLAG = 0 GP3  INPUT 時間設定できる
+ * FLAG = 1 時間設定後，タイマスタート猶予時間
+ * FLAG = 2 タイマ実行中
+ * FLAG = 3
+ */
+
 void main(void) {
     INIT();
     while (1) {
         switch (FLAG) {
             case 0:
-                if (GPIO3 == 1)
+                if (GPIObits.GP3 == 1)
                     pinchk();
                 break;
             case 1:
                 Timer_1(3);
                 break;
             case 2:
+                NOP();
+                break;
+            case 3:
                 NOP();
                 break;
         }
