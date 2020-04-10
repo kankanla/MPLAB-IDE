@@ -39,7 +39,7 @@ asm("OSCCAL equ 090h");
  * FLAG = 3
  */
 char FLAG = 1; //現在の状態
-char TCONT = 0; //タイマ回数/時間設定
+char TCONT = 3; //タイマ回数/時間設定
 int CONT_TEMP = 0; //カウンターのTemp;
 
 void interrupt isr(void) {
@@ -62,15 +62,17 @@ void interrupt isr(void) {
     //    }
     if (FLAG == 2) {
         if (PIR1bits.TMR1IF == 1) {
-            ++CONT_TEMP;
-            if (CONT_TEMP > 1000) {
+            //1000 Target halted. Stopwatch cycle count = 524344286 (524.344286 s)
+            //1718 Target halted. Stopwatch cycle count = 900823228 (900.823228 s)
+            //1717 Target halted. Stopwatch cycle count = 900298883 (900.298883 s)
+            if (CONT_TEMP > 1717) {
                 GPIObits.GP4 = 0;
                 FLAG = 0;
                 CONT_TEMP = 0;
                 TMR1Lbits.TMR1L = 0;
                 TMR1Hbits.TMR1H = 0;
                 PIR1bits.TMR1IF = 0;
-                PIE1bits.TMR1IE = 0;
+                PIE1bits.TMR1IE = 0; //Timer1終了
             } else {
                 GPIObits.GP4 = 1;
                 FLAG = 2;
@@ -78,7 +80,7 @@ void interrupt isr(void) {
                 TMR1Lbits.TMR1L = 0;
                 TMR1Hbits.TMR1H = 0;
                 PIR1bits.TMR1IF = 0;
-                PIE1bits.TMR1IE = 1;
+                PIE1bits.TMR1IE = 1; //Timer1続き
             }
         }
     }
