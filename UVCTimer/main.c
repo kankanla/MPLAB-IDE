@@ -19,17 +19,17 @@
 //#include<stdio.h>
 
 /*
- * UVC Timer    15,+15,+30 分
+ * UVC Timer    15分 x7 
  * GP0  OUT     LED1    時間表示用
  * GP1  OUT     LED2    時間表示用
  * GP2  OUT     LED3    時間表示用
- * GP3  INPUT   INPUT   時間設定キー 4x15，起動後人体センサー判断
+ * GP3  INPUT   INPUT   時間設定キー 
  * GP4  OUT     LED,    リレー起動用
  * GP5  OUT     Beep    警告音
  */
 
 //OSCCAL = __osccal_val();
-//#define _XTAL_FREQ 4000000
+#define _XTAL_FREQ 4000000
 asm("OSCCAL equ 090h");
 
 /*
@@ -38,9 +38,9 @@ asm("OSCCAL equ 090h");
  * FLAG = 2 タイマ実行中
  * FLAG = 3
  */
-char FLAG = 1; //現在の状態
-char TCONT = 3; //タイマ回数/時間設定
-int CONT_TEMP = 0; //カウンターのTemp;
+unsigned char FLAG = 0; //現在の状態 デフォルト0
+unsigned char TCONT = 0; //タイマ回数/時間設定 デフォルト 0
+unsigned int CONT_TEMP = 0; //カウンターのTemp デフォルト0
 
 void interrupt isr(void) {
     INTCONbits.GIE = 0;
@@ -62,26 +62,30 @@ void interrupt isr(void) {
     //    }
     if (FLAG == 2) {
         if (PIR1bits.TMR1IF == 1) {
+            TMR1Lbits.TMR1L = 0;
+            TMR1Hbits.TMR1H = 0;
             //1000 Target halted. Stopwatch cycle count = 524344286 (524.344286 s)
-            //1718 Target halted. Stopwatch cycle count = 900823228 (900.823228 s)
             //1717 Target halted. Stopwatch cycle count = 900298883 (900.298883 s)
-            if (CONT_TEMP > 1717) {
-                GPIObits.GP4 = 0;
+            //TCONT = 1 Target halted. Stopwatch cycle count = 900780098 (900.780098 s)
+            //TCONT = 2 Target halted. Stopwatch cycle count = 1801560140 (1801.56014 s)
+            if (CONT_TEMP > 1717 && TCONT == 1) {
                 FLAG = 0;
+                GPIObits.GP4 = 0;
                 CONT_TEMP = 0;
-                TMR1Lbits.TMR1L = 0;
-                TMR1Hbits.TMR1H = 0;
                 PIR1bits.TMR1IF = 0;
                 PIE1bits.TMR1IE = 0; //Timer1終了
             } else {
-                GPIObits.GP4 = 1;
                 FLAG = 2;
-                CONT_TEMP = CONT_TEMP;
-                TMR1Lbits.TMR1L = 0;
-                TMR1Hbits.TMR1H = 0;
+                GPIObits.GP4 = 1;
+                if (CONT_TEMP > 1717) {
+                    CONT_TEMP = 0;
+                    TCONT -= 1;
+                }
+                CONT_TEMP += 1;
                 PIR1bits.TMR1IF = 0;
                 PIE1bits.TMR1IE = 1; //Timer1続き
             }
+
         }
     }
     //    if (FLAG == 3) {
@@ -96,7 +100,72 @@ void INIT(void) {
     ANSEL = 0;
     CMCON = 0;
     TRISIO = 0b00001000;
+    GPIO = 0;
+    //    GPIObits.GP0 = 0;
+    //    GPIObits.GP1 = 0;
+    //    GPIObits.GP2 = 0;
+    //    GPIObits.GP4 = 0;
+    //    GPIObits.GP5 = 0;
     return;
+}
+
+void showLED(void) {
+    if (TCONT == 0) {
+        GPIObits.GP0 = 0;
+        GPIObits.GP1 = 0;
+        GPIObits.GP2 = 0;
+    }
+    if (TCONT == 1) {
+        GPIObits.GP0 = 1;
+        GPIObits.GP1 = 0;
+        GPIObits.GP2 = 0;
+    }
+    if (TCONT == 2) {
+        GPIObits.GP0 = 0;
+        GPIObits.GP1 = 1;
+        GPIObits.GP2 = 0;
+    }
+    if (TCONT == 3) {
+        GPIObits.GP0 = 1;
+        GPIObits.GP1 = 1;
+        GPIObits.GP2 = 0;
+    }
+    if (TCONT == 4) {
+        GPIObits.GP0 = 0;
+        GPIObits.GP1 = 0;
+        GPIObits.GP2 = 1;
+    }
+    if (TCONT == 5) {
+        GPIObits.GP0 = 1;
+        GPIObits.GP1 = 0;
+        GPIObits.GP2 = 1;
+    }
+    if (TCONT == 6) {
+        GPIObits.GP0 = 0;
+        GPIObits.GP1 = 1;
+        GPIObits.GP2 = 1;
+    }
+    if (TCONT == 7) {
+        GPIObits.GP0 = 1;
+        GPIObits.GP1 = 1;
+        GPIObits.GP2 = 1;
+    }
+    if (TCONT > 7) {
+        NOP();
+    }
+}
+
+void beep(void) {
+    GPIObits.GP5 = 1;
+    NOP();
+    NOP();
+    NOP();
+    NOP();
+    GPIObits.GP5 = 0;
+    NOP();
+    NOP();
+    NOP();
+    NOP();
 }
 
 /*
@@ -114,50 +183,10 @@ void pinchk(void) {
     while (FLAG == 0) {
         if (GPIObits.GP3 == 1) {
             TCONT = TCONT + 1;
-            NOP();
-            if (TCONT == 0) {
-                GPIObits.GP0 = 0;
-                GPIObits.GP1 = 0;
-                GPIObits.GP2 = 0;
-            }
-            if (TCONT == 1) {
-                GPIObits.GP0 = 1;
-                GPIObits.GP1 = 0;
-                GPIObits.GP2 = 0;
-            }
-            if (TCONT == 2) {
-                GPIObits.GP0 = 0;
-                GPIObits.GP1 = 1;
-                GPIObits.GP2 = 0;
-            }
-            if (TCONT == 3) {
-                GPIObits.GP0 = 1;
-                GPIObits.GP1 = 1;
-                GPIObits.GP2 = 0;
-            }
-            if (TCONT == 4) {
-                GPIObits.GP0 = 0;
-                GPIObits.GP1 = 0;
-                GPIObits.GP2 = 1;
-            }
-            if (TCONT == 5) {
-                GPIObits.GP0 = 1;
-                GPIObits.GP1 = 0;
-                GPIObits.GP2 = 1;
-            }
-            if (TCONT == 6) {
-                GPIObits.GP0 = 0;
-                GPIObits.GP1 = 1;
-                GPIObits.GP2 = 1;
-            }
-            if (TCONT == 7) {
-                GPIObits.GP0 = 1;
-                GPIObits.GP1 = 1;
-                GPIObits.GP2 = 1;
-            }
             if (TCONT > 7) {
-                NOP();
+                TCONT = 7;
             }
+            showLED();
             while (GPIObits.GP3 == 1);
         }
         NOP();
@@ -166,7 +195,7 @@ void pinchk(void) {
     return;
 }
 
-void Timer_1(char a) {
+void Timer_1(void) {
     TMR1Lbits.TMR1L = 0;
     TMR1Hbits.TMR1H = 1;
     T1CONbits.TMR1GE = 0;
@@ -177,10 +206,12 @@ void Timer_1(char a) {
     T1CONbits.TMR1CS = 0;
     T1CONbits.TMR1ON = 1;
     GPIObits.GP4 = 0;
-    //    for (char i = 0; i < 2; i++) {
-    //        __delay_ms(1000);
-    //    }
 
+    for (char i = 0; i < 2; i++) {
+        __delay_ms(10);
+    }
+
+    //約4秒カウント待つ時間
     CONT_TEMP = 0;
     while (CONT_TEMP < 20) {
         while (TMR1H != 0) {
@@ -217,9 +248,14 @@ void main(void) {
                     pinchk();
                 break;
             case 1:
-                Timer_1(3);
+                Timer_1();
                 break;
             case 2:
+                GPIObits.GP0 = 0;
+                GPIObits.GP1 = 0;
+                GPIObits.GP2 = 0;
+                beep();
+                showLED();
                 NOP();
                 break;
             case 3:
