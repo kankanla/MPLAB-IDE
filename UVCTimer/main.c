@@ -23,18 +23,19 @@
  * GP5  OUT     LED1    時間表示用
  * GP0  OUT     LED2    時間表示用
  * GP1  OUT     LED3    時間表示用
- * GP2  INPUT   INT     割り込み時間表示用
+ * GP2  INPUT   INT     割り込み マイクロ波レーダーセンサーRCWL-0516
  * GP3  INPUT   INPUT   時間設定キー 
- * GP4  OUT     LED,    リレー起動用
+ * GP4  OUT     LED,    リレー起動用 
  * GP5  OUT     Beep    警告音
  */
 
 //OSCCAL = __osccal_val();
 #define _XTAL_FREQ 4000000
-asm("OSCCAL equ 090h");
+//#define _XTAL_FREQ 4Mhz
+//asm("OSCCAL equ 090h");
 
 /*
- * FLAG = 0 GP3  INPUT 時間設定できる
+ * FLAG = 0 GP3 INPUT 時間設定
  * FLAG = 1 時間設定後，タイマスタート猶予時間
  * FLAG = 2 タイマ実行中
  * FLAG = 3
@@ -46,6 +47,9 @@ unsigned int CONT_TEMP = 0; //カウンターのTemp デフォルト0
 void interrupt isr(void) {
     INTCONbits.GIE = 0;
     if (FLAG == 0) {
+        /*
+         * Timer0 の設定時間内でGP3のInput回数設定
+         */
         if (INTCONbits.T0IF == 1) {
             INTCONbits.T0IE = 0;
             INTCONbits.T0IF = 0;
@@ -62,6 +66,10 @@ void interrupt isr(void) {
     }
 
     if (FLAG == 2) {
+        /*
+         * タイマ実行中
+         * GP2割り込みが発生する場合GP4出力を一回無効にする．
+         */
         INTCONbits.T0IE = 0;
         if (INTCONbits.INTF == 1) {
             GPIObits.GP4 = 0;
@@ -74,15 +82,21 @@ void interrupt isr(void) {
             //1000 Target halted. Stopwatch cycle count = 524344286 (524.344286 s)
             //1717 Target halted. Stopwatch cycle count = 900298883 (900.298883 s)
             //TCONT = 1 Target halted. Stopwatch cycle count = 900780098 (900.780098 s)
-            //TCONT = 2 Target halted. Stopwatch cycle count = 1801560140 (1801.56014 s)
-            if (CONT_TEMP > 1717 && TCONT == 0) {
+            //1分 ==101
+            //15分 ==1515
+            if (TCONT == 0) {
+                /*
+                 * タイマ停止
+                 */
                 FLAG = 0;
                 GPIObits.GP4 = 0;
-                CONT_TEMP = 0;
                 PIE1bits.TMR1IE = 0; //Timer1終了
             } else {
+                /*
+                 * タイマ続き，カウント-1
+                 */
                 FLAG = 2;
-                if (CONT_TEMP > 1717) {
+                if (CONT_TEMP > 1515) {
                     CONT_TEMP = 0;
                     TCONT -= 1;
                     GPIObits.GP4 = 1;
@@ -102,6 +116,14 @@ void interrupt isr(void) {
  * 初期化設定
  */
 void INIT(void) {
+    //    OSCCAL = __osccal_val();
+    //    OSCCAL = 0x90;
+    OSCCALbits.CAL5 = 0;
+    OSCCALbits.CAL4 = 0;
+    OSCCALbits.CAL3 = 0;
+    OSCCALbits.CAL2 = 0;
+    OSCCALbits.CAL1 = 0;
+    OSCCALbits.CAL0 = 0;
     OPTION_REGbits.nGPPU = 1;
     OPTION_REGbits.T0CS = 0;
     OPTION_REGbits.INTEDG = 1;
@@ -116,6 +138,9 @@ void INIT(void) {
 }
 
 void showLED(void) {
+    /*
+     * TCONT値によって，LED表示．
+     */
     switch (TCONT) {
         case 0:
             GPIObits.GP5 = 0;
@@ -182,7 +207,6 @@ void pinchk(void) {
     TMR0 = 0;
     while (FLAG == 0) {
         showLED();
-        unsigned char temp = 0;
         while (GPIObits.GP3 == 1) {
             for (unsigned char i = 0; i < 254; i++) {
                 if (GPIObits.GP3 != 1) {
@@ -203,6 +227,9 @@ void pinchk(void) {
 }
 
 void Timer_1(void) {
+    /*
+     * タイマ1設定     
+     */
     TMR1Lbits.TMR1L = 0;
     TMR1Hbits.TMR1H = 1;
     T1CONbits.TMR1GE = 0;
@@ -226,6 +253,9 @@ void Timer_1(void) {
         CONT_TEMP += 1;
     }
 
+    /*
+     * タイマ1スタート
+     */
     FLAG = 2;
     CONT_TEMP = 0;
     TMR1Lbits.TMR1L = 0;
@@ -260,7 +290,7 @@ void main(void) {
                 break;
             case 2:
                 beep();
-                __delay_ms(15000);
+                __delay_ms(13000);
                 NOP();
                 break;
             case 3:
