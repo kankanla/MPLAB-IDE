@@ -20,13 +20,12 @@
 
 /*
  * UVC Timer    15分 x7 
- * GP5  OUT     LED1    時間表示用
+ * GP5  OUT     LED1    時間表示用，警告音
  * GP0  OUT     LED2    時間表示用
  * GP1  OUT     LED3    時間表示用
- * GP2  INPUT   INT     割り込み マイクロ波レーダーセンサーRCWL-0516
- * GP3  INPUT   INPUT   時間設定キー 
+ * GP2  INPUT   INT     割り込み マイクロ波レーダーセンサーRCWL-0516など
+ * GP3  INPUT   INPUT   時間設定キー,長押し停止
  * GP4  OUT     LED,    リレー起動用 
- * GP5  OUT     Beep    警告音
  */
 
 //OSCCAL = __osccal_val();
@@ -49,6 +48,7 @@ void interrupt isr(void) {
     if (FLAG == 0) {
         /*
          * Timer0 の設定時間内でGP3のInput回数設定
+         * この時間をすぎると設定できなくなる．
          */
         if (INTCONbits.T0IF == 1) {
             INTCONbits.T0IE = 0;
@@ -59,7 +59,7 @@ void interrupt isr(void) {
                 CONT_TEMP = 0;
                 INTCONbits.T0IE = 0;
             } else {
-                TMR0 = 1;
+                TMR0 = 180;
                 INTCONbits.T0IE = 1;
             }
         }
@@ -88,6 +88,7 @@ void interrupt isr(void) {
                 /*
                  * タイマ停止
                  */
+                INTCONbits.INTE = 0;
                 FLAG = 0;
                 GPIObits.GP4 = 0;
                 PIE1bits.TMR1IE = 0; //Timer1終了
@@ -96,7 +97,7 @@ void interrupt isr(void) {
                  * タイマ続き，カウント-1
                  */
                 FLAG = 2;
-                if (CONT_TEMP > 1515) {
+                if (CONT_TEMP > 101) {
                     CONT_TEMP = 0;
                     TCONT -= 1;
                     GPIObits.GP4 = 1;
@@ -104,7 +105,6 @@ void interrupt isr(void) {
                 CONT_TEMP += 1;
                 PIE1bits.TMR1IE = 1; //Timer1続き
             }
-
         }
     }
     //    if (FLAG == 3) {
@@ -127,7 +127,7 @@ void INIT(void) {
     OPTION_REGbits.nGPPU = 1;
     OPTION_REGbits.T0CS = 0;
     OPTION_REGbits.INTEDG = 1;
-    INTCONbits.INTE = 1;
+    INTCONbits.INTE = 0;
     INTCONbits.GPIE = 0;
     CMCONbits.CM2 = 1;
     CMCONbits.CM1 = 1;
@@ -194,6 +194,19 @@ void beep(void) {
     }
 }
 
+void GP3stop(void) {
+    while (GP3 == 1) {
+        FLAG = 0;
+        TCONT = 0;
+        showLED();
+        PIE1bits.TMR1IE = 0;
+        INTCONbits.INTE = 0;
+        INTCONbits.PEIE = 0;
+        INTCONbits.GIE = 0;
+        GPIObits.GP4 = 0;
+    }
+}
+
 /*
  *時間設定スイッチ機能、一定期間内で押してTCONTカウント数を設定、約4秒内
  */
@@ -204,7 +217,7 @@ void pinchk(void) {
     OPTION_REGbits.PS0 = 1;
     INTCONbits.T0IE = 1;
     INTCONbits.GIE = 1;
-    TMR0 = 0;
+    TMR0 = 180;
     while (FLAG == 0) {
         showLED();
         while (GPIObits.GP3 == 1) {
@@ -248,9 +261,14 @@ void Timer_1(void) {
     while (CONT_TEMP < 50) {
         while (TMR1H != 0) {
         }
-        beep();
         TMR1H = 180;
         CONT_TEMP += 1;
+        beep();
+        //タイマー停止
+        if (GP3 == 1) {
+            GP3stop();
+            break;
+        }
     }
 
     /*
@@ -260,7 +278,9 @@ void Timer_1(void) {
     CONT_TEMP = 0;
     TMR1Lbits.TMR1L = 0;
     TMR1Hbits.TMR1H = 0;
-    GPIObits.GP4 = 1;
+    if (TCONT != 0) {
+        GPIObits.GP4 = 1;
+    }
     PIE1bits.TMR1IE = 1;
     INTCONbits.INTE = 1;
     INTCONbits.PEIE = 1;
@@ -290,7 +310,9 @@ void main(void) {
                 break;
             case 2:
                 beep();
-                __delay_ms(13000);
+                beep();
+                GP3stop(); //タイマー停止
+                __delay_ms(1000);
                 NOP();
                 break;
             case 3:
