@@ -1,7 +1,7 @@
 /*
  * File:   main.c
  * Author: E560
- * UVC 起動 遅延スタートタイマー,15分x最大7回=
+ * UVC 起動 遅延スタートタイマー,xx分x最大6回,常オン
  *
  * Created on 2020/03/06, 22:31
  */
@@ -19,7 +19,7 @@
 //#include<stdio.h>
 
 /*
- * UVC Timer    15分 x7 
+ * UVC Timer    XX分 x6回，常オン 
  * GP5  OUT     LED1    時間表示用，警告音
  * GP0  OUT     LED2    時間表示用
  * GP1  OUT     LED3    時間表示用
@@ -66,11 +66,11 @@ void interrupt isr(void) {
     }
 
     if (FLAG == 2) {
+        INTCONbits.T0IE = 0;
         /*
          * タイマ実行中
          * GP2割り込みが発生する場合GP4出力を一回無効にする．
          */
-        INTCONbits.T0IE = 0;
         if (INTCONbits.INTF == 1) {
             GPIObits.GP4 = 0;
             INTCONbits.INTF = 0;
@@ -83,6 +83,7 @@ void interrupt isr(void) {
             //1717 Target halted. Stopwatch cycle count = 900298883 (900.298883 s)
             //TCONT = 1 Target halted. Stopwatch cycle count = 900780098 (900.780098 s)
             //1分 ==101
+            //7分 ==707
             //15分 ==1515
             if (TCONT == 0) {
                 /*
@@ -92,6 +93,18 @@ void interrupt isr(void) {
                 FLAG = 0;
                 GPIObits.GP4 = 0;
                 PIE1bits.TMR1IE = 0; //Timer1終了
+            } else if (TCONT == 7) {
+                /*
+                 * タイマない，常オン
+                 */
+                FLAG = 2;
+                if (CONT_TEMP > 101) {
+                    CONT_TEMP = 0;
+                    TCONT = 7;
+                    GPIObits.GP4 = 1;
+                }
+                CONT_TEMP += 1;
+                PIE1bits.TMR1IE = 1; //Timer1続き
             } else {
                 /*
                  * タイマ続き，カウント-1
