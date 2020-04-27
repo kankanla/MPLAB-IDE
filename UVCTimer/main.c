@@ -73,6 +73,7 @@ void interrupt isr(void) {
          */
         if (INTCONbits.INTF == 1) {
             GPIObits.GP4 = 0;
+            GPIObits.GP2 = 0;
             INTCONbits.INTF = 0;
         }
         if (PIR1bits.TMR1IF == 1) {
@@ -98,7 +99,7 @@ void interrupt isr(void) {
                  * タイマない，常オン
                  */
                 FLAG = 2;
-                if (CONT_TEMP > 101) {
+                if (CONT_TEMP > 202) {
                     CONT_TEMP = 0;
                     TCONT = 7;
                     GPIObits.GP4 = 1;
@@ -110,7 +111,7 @@ void interrupt isr(void) {
                  * タイマ続き，カウント-1
                  */
                 FLAG = 2;
-                if (CONT_TEMP > 101) {
+                if (CONT_TEMP > 707) {
                     CONT_TEMP = 0;
                     TCONT -= 1;
                     GPIObits.GP4 = 1;
@@ -293,6 +294,7 @@ void Timer_1(void) {
     TMR1Hbits.TMR1H = 0;
     if (TCONT != 0) {
         GPIObits.GP4 = 1;
+        GPIObits.GP2 = 0;
     }
     PIE1bits.TMR1IE = 1;
     INTCONbits.INTE = 1;
