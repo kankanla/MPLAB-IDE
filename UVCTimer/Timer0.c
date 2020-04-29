@@ -23,8 +23,8 @@
 #include <stdint.h> 
 #include <limits.h>
 
-unsigned long int STM = 0;
-unsigned long int TTM = 0;
+unsigned long int STM0 = 0;
+unsigned int STM10 = 0;
 
 /*
  * 
@@ -34,21 +34,36 @@ void interrupt ISR(void) {
     INTCONbits.GIE = 0;
     if (INTCONbits.T0IF == 1) {
         INTCONbits.T0IF = 0;
-        TMR0 = 0;
-        STM += 1;
+        //        TMR0 = 0;
+        STM0 += 1;
+        if (STM0 == 4294967295) {
+            STM0 = 0;
+        }
     }
-    INTCONbits.GIE = 1;
+
+    if (INTCONbits.INTF == 1) {
+        INTCONbits.INTF = 0;
+    }
+
+    if (PIR1bits.TMR1IF == 1) {
+        PIR1bits.TMR1IF = 0;
+        //    TMR1Lbits.TMR1L = 0;
+        //    TMR1Hbits.TMR1H = 0;
+        STM10 += 1;
+        if (STM10 == 65535) {
+            STM10 = 0;
+        }
+    }
 }
 
-void Stimer(void) {
+void PIC_TIMER0(void) {
     OPTION_REGbits.T0CS = 0;
     OPTION_REGbits.PSA = 0;
     OPTION_REGbits.PS2 = 1;
     OPTION_REGbits.PS1 = 1;
     OPTION_REGbits.PS0 = 1;
     INTCONbits.T0IE = 1;
-    INTCONbits.GIE = 1;
-    TMR0 = 0;
+    //    TMR0 = 0;
     /*
      * TMR0 = 0 12F675 4Mhz
      * 111 1:256 = 65556 (65.556 ms)
@@ -66,18 +81,61 @@ void Stimer(void) {
      * 65.556 ms * 2147483647 = 4.46115816 年
      * 532 µs * 2147483647 = 13.2229317 日
      */
+}
 
+void PIC_TIMER1(void) {
+    //    TMR1Lbits.TMR1L = 0;
+    //    TMR1Hbits.TMR1H = 0;
+    T1CONbits.TMR1GE = 0;
+    T1CONbits.nT1SYNC = 1;
+    T1CONbits.TMR1CS = 0;
+    T1CONbits.TMR1ON = 1;
+    T1CONbits.T1CKPS1 = 1;
+    T1CONbits.T1CKPS0 = 1;
+    /*
+     * TMR1L = 0 TMR1H = 0 12F675 4Mhz
+     * 11  =  1:8   = 524289 (524.289 ms)
+     * 10  =  1:4   = 262145 (262.145 ms)
+     * 01  =  1:2   = 131073 (131.073 ms)
+     * 00  =  1:1   = 65536 (65.536 ms)
+     * 524.289 ms x 65536 = 9.54438997 時間
+     * 65.536 ms x 65536 1.19304647 時間;
+     */
 
+    INTCONbits.TMR0IE = 1;
+    PIR1bits.TMR1IF = 0;
+    PIE1bits.TMR1IE = 1;
 }
 
 void init(void) {
-
+    //    OSCCAL = __osccal_val();
+    //    OSCCAL = 0x90;
+    //    OSCCALbits.CAL5 = 0;
+    //    OSCCALbits.CAL4 = 0;
+    //    OSCCALbits.CAL3 = 0;
+    //    OSCCALbits.CAL2 = 0;
+    //    OSCCALbits.CAL1 = 0;
+    //    OSCCALbits.CAL0 = 0;
+    OPTION_REGbits.nGPPU = 1;
+    OPTION_REGbits.T0CS = 0;
+    OPTION_REGbits.INTEDG = 1;
+    INTCONbits.INTE = 0;
+    INTCONbits.GPIE = 0;
+    CMCONbits.CM2 = 1;
+    CMCONbits.CM1 = 1;
+    CMCONbits.CM0 = 1;
+    TRISIO = 0b00001100;
+    GPIO = 0;
+    ANSEL = 0;
 }
 
 int main(void) {
-    Stimer();
+    PIC_TIMER0();
+    PIC_TIMER1();
+    INTCONbits.GIE = 1;
+    INTCONbits.PEIE = 1;
     while (1) {
-        TTM += 1;
+
     }
 }
 
