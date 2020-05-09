@@ -1,7 +1,8 @@
 /* 
  * File:   main2.c
  * Author: E560
- *
+ * TMR0 = 111 1:256 = 65556 (65.556 ms)
+ * TMR1 = 11 1:8 = 524289 (524.289 ms)
  * Created on 2020/04/29, 2:09
  */
 
@@ -24,13 +25,13 @@
 //#include <limits.h>
 
 //unsigned long int STM0 = 0;
-unsigned int STM0 = 0;
-unsigned int STM10 = 0;
-unsigned char FLAG = 0;
-unsigned char TCONT = 0;
-unsigned int TCONT_TEMP = 0;
-unsigned int SET_TEMP = 0;
-unsigned int GP2INTFTime = 0;
+unsigned int STM0 = 0; //Timer0 カウント
+unsigned int STM10 = 0; //Timer1 カウント
+unsigned char FLAG = 0; //状態1:0:タイマ設定待つ，1:タイマ設定完了開始へ，2:タイマ中
+unsigned char TCONT = 0; //タイマ値，1-6ごと 1分，7の場合タイマ無制限
+unsigned int TCONT_TEMP = 0; //タイマ値のTimer1のカウンタ 115までは一分間
+unsigned int SET_TEMP = 0; //設定のTEMP
+unsigned int GP2INTFTime = 0; //GP2割り込みの時間設定用，最後の割り込みから一分間以内点灯しない
 
 /*
  * 
@@ -54,20 +55,30 @@ void interrupt ISR(void) {
         //    TMR1Lbits.TMR1L = 0;
         //    TMR1Hbits.TMR1H = 0;
         STM10 += 1;
-        TCONT_TEMP += 1;
-        //60s / 524.289 ms = 114.4407
-        //600s / 524.289 ms = 1144.407
-        // (420s) / (524.28900 ms) = 801.084898
-        if (TCONT_TEMP == 115) {
-            if (TCONT == 7) {
-                TCONT = 7;
-            } else {
-                TCONT -= 1;
-                if (TCONT > 7) {
-                    TCONT = 0;
+        switch (FLAG) {
+            case 0:
+                TCONT_TEMP = 0;
+                break;
+            case 1:
+                TCONT_TEMP = 0;
+                break;
+            case 2:
+                //60s / 524.289 ms = 114.4407
+                //600s / 524.289 ms = 1144.407
+                // (420s) / (524.28900 ms) = 801.084898
+                TCONT_TEMP += 1;
+                if (TCONT_TEMP == 115) {
+                    if (TCONT == 7) {
+                        TCONT = 7;
+                    } else {
+                        TCONT -= 1;
+                        if (TCONT > 7) {
+                            TCONT = 0;
+                        }
+                    }
+                    TCONT_TEMP = 0;
                 }
-            }
-            TCONT_TEMP = 0;
+                break;
         }
     }
 }
@@ -111,10 +122,10 @@ void PIC_TIMER1(void) {
     T1CONbits.T1CKPS0 = 1;
     /*
      * TMR1L = 0 TMR1H = 0 12F675 4Mhz
-     * 11  =  1:8   = 524289 (524.289 ms)
-     * 10  =  1:4   = 262145 (262.145 ms)
-     * 01  =  1:2   = 131073 (131.073 ms)
-     * 00  =  1:1   = 65536 (65.536 ms)
+     * 11 1:8   = 524289 (524.289 ms)
+     * 10 1:4   = 262145 (262.145 ms)
+     * 01 1:2   = 131073 (131.073 ms)
+     * 00 1:1   = 65536 (65.536 ms)
      * 524.289 ms x 65536 = 9.54438997 時間
      * 65.536 ms x 65536 1.19304647 時間;
      */
@@ -165,31 +176,37 @@ void ShowLED(void) {
             GPIObits.GP1 = 0;
             break;
         case 1:
+            // Target halted. Stopwatch cycle count = 60813879 (60.813879 s)
             GPIObits.GP5 = 1;
             GPIObits.GP0 = 0;
             GPIObits.GP1 = 0;
             break;
         case 2:
+            // Target halted. Stopwatch cycle count = 120582701 (120.582701 s)
             GPIObits.GP5 = 0;
             GPIObits.GP0 = 1;
             GPIObits.GP1 = 0;
             break;
         case 3:
+            // Target halted. Stopwatch cycle count = 181400127 (181.400127 s)
             GPIObits.GP5 = 1;
             GPIObits.GP0 = 1;
             GPIObits.GP1 = 0;
             break;
         case 4:
+            // Target halted. Stopwatch cycle count = 241168989 (241.168989 s)
             GPIObits.GP5 = 0;
             GPIObits.GP0 = 0;
             GPIObits.GP1 = 1;
             break;
         case 5:
+            // Target halted. Stopwatch cycle count = 301986366 (301.986366 s)
             GPIObits.GP5 = 1;
             GPIObits.GP0 = 0;
             GPIObits.GP1 = 1;
             break;
         case 6:
+            // Target halted. Stopwatch cycle count = 361755162 (361.755162 s);
             GPIObits.GP5 = 0;
             GPIObits.GP0 = 1;
             GPIObits.GP1 = 1;
@@ -278,10 +295,16 @@ int main(void) {
                     }
                 }
                 FLAG = 2;
+                SET_TEMP = STM0;
                 GPIObits.GP4 = 0;
                 break;
             case 2:
-                if (STM0 % 2 == 0) {
+                // (STM0 - SET_TEMP) == 16 cycle count = 1048575 (1.048575 s)
+                // (STM0 - SET_TEMP) == 1 cycle count = 65545 (65.545 ms)
+                // (1秒) / (65.54500 ms) = 15.2566939
+                if ((STM0 - SET_TEMP) == 16) {
+                    SET_TEMP = STM0;
+                    beep();
                     UVCON();
                 }
                 break;
