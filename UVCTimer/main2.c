@@ -137,12 +137,12 @@ void PIC_TIMER1(void) {
 void INIT(void) {
     //    OSCCAL = __osccal_val();
     //    OSCCAL = 0x90;
-    //    OSCCALbits.CAL5 = 0;
-    //    OSCCALbits.CAL4 = 0;
-    //    OSCCALbits.CAL3 = 0;
-    //    OSCCALbits.CAL2 = 0;
-    //    OSCCALbits.CAL1 = 0;
-    //    OSCCALbits.CAL0 = 0;
+    OSCCALbits.CAL5 = 0;
+    OSCCALbits.CAL4 = 0;
+    OSCCALbits.CAL3 = 0;
+    OSCCALbits.CAL2 = 0;
+    OSCCALbits.CAL1 = 0;
+    OSCCALbits.CAL0 = 0;
     OPTION_REGbits.nGPPU = 1;
     OPTION_REGbits.T0CS = 0;
     OPTION_REGbits.INTEDG = 1;
@@ -222,12 +222,10 @@ void ShowLED(void) {
 void GP3stop(void) {
     //(4秒) / (65.55600 ms) = 61.0165355
     unsigned int temp = STM0;
-    while (GP3 == 1) {
+    while (GPIObits.GP3 == 1) {
         if ((STM0 - temp) > 61) {
-            FLAG = 0;
             TCONT = 0;
             ShowLED();
-            GPIObits.GP4 = 0;
         }
     }
 }
@@ -250,6 +248,7 @@ void SetCount(void) {
 
 void UVCON(void) {
     //(60秒) / (65.55600 ms) = 915.248032
+    GP3stop();
     if ((STM0 - GP2INTFTime) > 915) {
         GPIObits.GP4 = 1;
     } else {
@@ -261,7 +260,6 @@ void UVCON(void) {
         FLAG = 0;
     }
     ShowLED();
-    GP3stop();
 }
 
 int main(void) {
@@ -302,7 +300,7 @@ int main(void) {
                 // (STM0 - SET_TEMP) == 16 cycle count = 1048575 (1.048575 s)
                 // (STM0 - SET_TEMP) == 1 cycle count = 65545 (65.545 ms)
                 // (1秒) / (65.54500 ms) = 15.2566939
-                if ((STM0 - SET_TEMP) == 16) {
+                if ((STM0 - SET_TEMP) >= 14) {
                     SET_TEMP = STM0;
                     beep();
                     UVCON();
