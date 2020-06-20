@@ -66,8 +66,10 @@ void interrupt ISR(void) {
                 //60s / 524.289 ms = 114.4407
                 //600s / 524.289 ms = 1144.407
                 // (420s) / (524.28900 ms) = 801.084898
+                //1800s/524.289 ms = 3420    30分
+                //3600000ms/524.289ms = 6866.44198  1時間
                 TCONT_TEMP += 1;
-                if (TCONT_TEMP == 115) {
+                if (TCONT_TEMP == 6866) {
                     if (TCONT == 7) {
                         TCONT = 7;
                     } else {
@@ -300,10 +302,10 @@ int main(void) {
                 // (STM0 - SET_TEMP) == 16 cycle count = 1048575 (1.048575 s)
                 // (STM0 - SET_TEMP) == 1 cycle count = 65545 (65.545 ms)
                 // (1秒) / (65.54500 ms) = 15.2566939
+                UVCON();
                 if ((STM0 - SET_TEMP) >= 14) {
                     SET_TEMP = STM0;
                     beep();
-                    UVCON();
                 }
                 break;
             case 3:
